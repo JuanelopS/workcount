@@ -1,31 +1,43 @@
 package dev.jugapi.workcount.application.service;
 
 import dev.jugapi.workcount.domain.model.WorkMonth;
+import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.port.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.domain.port.WorkRegistrationRepository;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Duration;
 import java.time.YearMonth;
 import java.util.List;
 
 public class WorkRegistrationService {
-    private WorkRegistrationRepository repository;
+    private final WorkRegistrationRepository wrRepo;
+    private final WorkMonthTemplateRepository wmtRepo;
+    private final Duration weeklyTarget;
 
-    public WorkRegistrationService(WorkRegistrationRepository repository) {
-        this.repository = repository;
+    public WorkRegistrationService(WorkRegistrationRepository repository,
+                                   WorkMonthTemplateRepository workMonthTemplateRepository,
+                                   @Value("${ss.policy.target-weekly-hours}") int weeklyHours) {
+        this.wrRepo = repository;
+        this.wmtRepo = workMonthTemplateRepository;
+        this.weeklyTarget = Duration.ofHours(weeklyHours);
     }
 
     public void registerDay(WorkRegistration registration) {
-        repository.save(registration);
+        wrRepo.save(registration);
     }
 
     public List<WorkRegistration> findByMonth(YearMonth month) {
-        return repository.findByMonth(month);
+        return wrRepo.findByMonth(month);
     }
 
     public Duration calculateMonthlyBalance(YearMonth month) {
-        List<WorkRegistration> registrations = repository.findByMonth(month);
-        WorkMonth workMonth = new WorkMonth(month, registrations, Duration.ofHours(160));
-        return workMonth.calculateBalance();
+        List<WorkRegistration> registrations = wrRepo.findByMonth(month);
+        WorkMonthTemplate template = wmtRepo
+                .getWorkMonthTemplate(month)
+                .orElseThrow(() -> new RuntimeException("Template not found: " + month));
+        Duration target = template.monthlyTargetHours(this.weeklyTarget);
+        return new WorkMonth(month, registrations, target).calculateBalance();
     }
 }

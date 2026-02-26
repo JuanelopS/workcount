@@ -1,0 +1,43 @@
+package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.template;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+
+import java.time.YearMonth;
+
+@Entity
+public class WorkMonthTemplateEntity {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private YearMonth yearMonth;
+    private int weeks;
+
+    public WorkMonthTemplateEntity() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public YearMonth getYearMonth() {
+        return yearMonth;
+    }
+
+    public void setYearMonth(YearMonth yearMonth) {
+        this.yearMonth = yearMonth;
+    }
+
+    public int getWeeks() {
+        return weeks;
+    }
+
+    public void setWeeks(int weeks) {
+        this.weeks = weeks;
+    }
+}

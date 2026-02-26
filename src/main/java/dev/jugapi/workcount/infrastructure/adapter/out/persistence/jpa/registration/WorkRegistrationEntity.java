@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa;
+package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

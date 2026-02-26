@@ -5,10 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class WorkRegistration {
-    private LocalDate workingDay;
-    private LocalTime startTime;
-    private LocalTime finishingTime;
-    private Duration breakDuration;
+    private final LocalDate workingDay;
+    private final LocalTime startTime;
+    private final LocalTime finishingTime;
+    private final Duration breakDuration;
     private Duration validatedHours;
 
     public WorkRegistration(LocalDate workingDay, LocalTime startTime, LocalTime finishingTime,
@@ -40,13 +40,14 @@ public class WorkRegistration {
         return validatedHours;
     }
 
-    public void validateHours(WorkPolicy policy) {
-        LocalTime realStart = startTime.isBefore(policy.getLimitEntryTime()) ?
-                policy.getLimitEntryTime() : startTime;
-        LocalTime realEnd = finishingTime.isAfter(policy.getLimitExitTime()) ?
-                policy.getLimitExitTime() : finishingTime;
+    public WorkRegistration validateHours(WorkPolicy policy) {
+        LocalTime realStart = startTime.isBefore(policy.limitEntryTime()) ?
+                policy.limitEntryTime() : startTime;
+        LocalTime realEnd = finishingTime.isAfter(policy.limitExitTime()) ?
+                policy.limitExitTime() : finishingTime;
         this.validatedHours = Duration
                 .between(realStart, realEnd)
                 .minus(breakDuration);
+        return this;
     }
 }

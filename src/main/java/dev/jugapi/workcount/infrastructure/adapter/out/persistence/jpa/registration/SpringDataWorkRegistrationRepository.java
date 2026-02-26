@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa;
+package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
