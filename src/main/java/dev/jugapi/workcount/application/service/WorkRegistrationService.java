@@ -16,11 +16,11 @@ public class WorkRegistrationService {
     private final WorkMonthTemplateRepository wmtRepo;
     private final Duration weeklyTarget;
 
-    public WorkRegistrationService(WorkRegistrationRepository repository,
-                                   WorkMonthTemplateRepository workMonthTemplateRepository,
+    public WorkRegistrationService(WorkRegistrationRepository wrRpo,
+                                   WorkMonthTemplateRepository wmtRepo,
                                    @Value("${ss.policy.target-weekly-hours}") int weeklyHours) {
-        this.wrRepo = repository;
-        this.wmtRepo = workMonthTemplateRepository;
+        this.wrRepo = wrRpo;
+        this.wmtRepo = wmtRepo;
         this.weeklyTarget = Duration.ofHours(weeklyHours);
     }
 
