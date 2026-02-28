@@ -4,9 +4,9 @@ import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.stereotype.Component;
 
 @Component
-public class WorkRegistrationMapper {
+public class WorkRegistrationWebMapper {
 
-    public WorkRegistration toDomain(WorkRegistrationRequest request) {
+    public WorkRegistration toDomain(WorkRegistrationWebRequest request) {
         return new WorkRegistration(
                 request.workingDay(),
                 request.startTime(),

@@ -1,7 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
 import dev.jugapi.workcount.application.service.WorkRegistrationService;
-import dev.jugapi.workcount.domain.model.WorkPolicy;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,11 +9,11 @@ import java.time.YearMonth;
 
 @RestController
 @RequestMapping("/api/work-registrations")
-public class WorkRegistrationController {
+public class WorkRegistrationWebController {
     private final WorkRegistrationService service;
-    private final WorkRegistrationMapper mapper;
+    private final WorkRegistrationWebMapper mapper;
 
-    public WorkRegistrationController(WorkRegistrationService service, WorkRegistrationMapper mapper) {
+    public WorkRegistrationWebController(WorkRegistrationService service, WorkRegistrationWebMapper mapper) {
         this.service = service;
         this.mapper = mapper;
     }
@@ -27,7 +26,7 @@ public class WorkRegistrationController {
 
     // TODO: validation needs to be implemented
     @PostMapping
-    public void registerWork(@RequestBody WorkRegistrationRequest wre) {
+    public void registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);
         service.registerDay(wr);
     }

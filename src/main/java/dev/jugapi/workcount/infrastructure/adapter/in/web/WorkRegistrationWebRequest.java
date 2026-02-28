@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record WorkRegistrationRequest(
+public record WorkRegistrationWebRequest(
         LocalDate workingDay, LocalTime startTime, LocalTime finishingTime,
         Duration breakDuration, Duration validatedHours) {
 }
