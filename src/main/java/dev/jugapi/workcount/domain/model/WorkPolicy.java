@@ -1,8 +1,16 @@
 package dev.jugapi.workcount.domain.model;
 
-import java.time.LocalTime;
+import java.time.DayOfWeek;
+import java.util.Map;
 
-public record WorkPolicy(
-        LocalTime limitEntryTime,
-        LocalTime limitExitTime) {
+public class WorkPolicy {
+    private final Map<DayOfWeek, DailyPolicy> rules;
+
+    public WorkPolicy(Map<DayOfWeek, DailyPolicy> rules) {
+        this.rules = rules;
+    }
+
+    public DailyPolicy getPolicyFor(DayOfWeek day){
+        return rules.get(day);
+    }
 }

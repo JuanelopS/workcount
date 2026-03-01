@@ -40,7 +40,7 @@ public class WorkRegistration {
         return validatedHours;
     }
 
-    public WorkRegistration validateHours(WorkPolicy policy) {
+    public WorkRegistration validateHours(DailyPolicy policy) {
         LocalTime realStart = startTime.isBefore(policy.limitEntryTime()) ?
                 policy.limitEntryTime() : startTime;
         LocalTime realEnd = finishingTime.isAfter(policy.limitExitTime()) ?
