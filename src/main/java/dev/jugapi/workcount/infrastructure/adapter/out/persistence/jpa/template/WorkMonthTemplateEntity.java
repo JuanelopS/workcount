@@ -1,5 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.template;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -11,6 +12,7 @@ public class WorkMonthTemplateEntity {
     @Id
     @GeneratedValue
     private Long id;
+    @Column(name = "year_month")
     private YearMonth yearMonth;
     private int weeks;
 

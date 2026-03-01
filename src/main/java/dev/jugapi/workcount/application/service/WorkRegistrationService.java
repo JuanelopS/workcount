@@ -6,11 +6,13 @@ import dev.jugapi.workcount.domain.model.WorkRegistration;
 import dev.jugapi.workcount.domain.port.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.domain.port.WorkRegistrationRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.YearMonth;
 import java.util.List;
 
+@Service
 public class WorkRegistrationService {
     private final WorkRegistrationRepository wrRepo;
     private final WorkMonthTemplateRepository wmtRepo;
@@ -18,10 +20,10 @@ public class WorkRegistrationService {
 
     public WorkRegistrationService(WorkRegistrationRepository wrRpo,
                                    WorkMonthTemplateRepository wmtRepo,
-                                   @Value("${ss.policy.target-weekly-hours}") int weeklyHours) {
+                                   @Value("${ss.policy.target-weekly-hours}") Duration weeklyHours) {
         this.wrRepo = wrRpo;
         this.wmtRepo = wmtRepo;
-        this.weeklyTarget = Duration.ofHours(weeklyHours);
+        this.weeklyTarget = weeklyHours;
     }
 
     public void registerDay(WorkRegistration registration) {

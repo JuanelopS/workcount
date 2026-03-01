@@ -24,7 +24,6 @@ public class WorkRegistrationWebController {
         return service.calculateMonthlyBalance(ym);
     }
 
-    // TODO: validation needs to be implemented
     @PostMapping
     public void registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);

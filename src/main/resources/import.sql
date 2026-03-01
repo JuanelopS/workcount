@@ -1,0 +1,1 @@
+INSERT INTO work_month_template_entity (id, year_month, weeks) VALUES (1, '2024-03-01', 4);
