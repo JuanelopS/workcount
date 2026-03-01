@@ -1,5 +1,6 @@
 package dev.jugapi.workcount.application.service;
 
+import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonth;
@@ -15,7 +16,6 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.YearMonth;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class WorkRegistrationService {
@@ -36,6 +36,11 @@ public class WorkRegistrationService {
 
     public void registerDay(WorkRegistration registration) {
         DayOfWeek day = registration.getWorkingDay().getDayOfWeek();
+
+        if(wrRepo.existsByWorkingDay(registration.getWorkingDay())){
+            throw new AlreadyRegisteredDayException(registration.getWorkingDay());
+        }
+
         DailyPolicy policy = dpRepo.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
         registration = registration.validateHours(policy);

@@ -34,4 +34,9 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsByWorkingDay(LocalDate date) {
+        return repository.existsByWorkingDay(date);
+    }
 }

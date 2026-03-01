@@ -1,18 +1,18 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
+@Table(name = "work_registration")
 public class WorkRegistrationEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "working_day", unique = true)
     private LocalDate workingDay;
     private LocalTime startTime;
     private LocalTime finishingTime;
