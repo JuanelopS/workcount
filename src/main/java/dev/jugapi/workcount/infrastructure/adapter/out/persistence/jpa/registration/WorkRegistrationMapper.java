@@ -6,24 +6,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class WorkRegistrationMapper {
 
-    public WorkRegistrationEntity toEntity(WorkRegistration wr) {
+    public WorkRegistrationEntity toEntity(WorkRegistration domain) {
         WorkRegistrationEntity entity = new WorkRegistrationEntity();
         entity.setId(null);
-        entity.setWorkingDay(wr.getWorkingDay());
-        entity.setStartTime(wr.getStartTime());
-        entity.setFinishingTime(wr.getFinishingTime());
-        entity.setBreakDuration(wr.getBreakDuration());
-        entity.setValidatedHours(wr.getValidatedHours());
+        entity.setWorkingDay(domain.getWorkingDay());
+        entity.setStartTime(domain.getStartTime());
+        entity.setFinishingTime(domain.getFinishingTime());
+        entity.setBreakDuration(domain.getBreakDuration());
+        entity.setValidatedHours(domain.getValidatedHours());
         return entity;
     }
 
-    public WorkRegistration toDomain(WorkRegistrationEntity wre) {
+    public WorkRegistration toDomain(WorkRegistrationEntity entity) {
         return new WorkRegistration(
-                wre.getWorkingDay(),
-                wre.getStartTime(),
-                wre.getFinishingTime(),
-                wre.getBreakDuration(),
-                wre.getValidatedHours()
+                entity.getWorkingDay(),
+                entity.getStartTime(),
+                entity.getFinishingTime(),
+                entity.getBreakDuration(),
+                entity.getValidatedHours()
         );
     }
 }

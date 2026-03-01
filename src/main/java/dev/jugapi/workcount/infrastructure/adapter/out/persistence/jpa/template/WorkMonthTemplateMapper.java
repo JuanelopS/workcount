@@ -6,18 +6,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class WorkMonthTemplateMapper {
 
-    public WorkMonthTemplateEntity toEntity(WorkMonthTemplate wmt) {
+    public WorkMonthTemplateEntity toEntity(WorkMonthTemplate domain) {
         WorkMonthTemplateEntity entity = new WorkMonthTemplateEntity();
         entity.setId(null);
-        entity.setYearMonth(wmt.yearMonth());
-        entity.setWeeks(wmt.weeks());
+        entity.setYearMonth(domain.yearMonth());
+        entity.setWeeks(domain.weeks());
         return entity;
     }
 
-    public WorkMonthTemplate toDomain(WorkMonthTemplateEntity wmte) {
+    public WorkMonthTemplate toDomain(WorkMonthTemplateEntity entity) {
         return new WorkMonthTemplate(
-                wmte.getYearMonth(),
-                wmte.getWeeks()
+                entity.getYearMonth(),
+                entity.getWeeks()
         );
     }
 }

@@ -6,5 +6,5 @@ import java.time.LocalTime;
 
 public record WorkRegistrationWebRequest(
         LocalDate workingDay, LocalTime startTime, LocalTime finishingTime,
-        Duration breakDuration, Duration validatedHours) {
+        Duration breakDuration) {
 }

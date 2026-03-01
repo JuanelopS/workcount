@@ -1,8 +1,10 @@
 package dev.jugapi.workcount.domain.model;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 public record DailyPolicy(
+        DayOfWeek dayOfWeek,
         LocalTime limitEntryTime,
         LocalTime limitExitTime) {
 

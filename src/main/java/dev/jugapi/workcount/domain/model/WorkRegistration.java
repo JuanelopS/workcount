@@ -41,10 +41,8 @@ public class WorkRegistration {
     }
 
     public WorkRegistration validateHours(DailyPolicy policy) {
-        LocalTime realStart = startTime.isBefore(policy.limitEntryTime()) ?
-                policy.limitEntryTime() : startTime;
-        LocalTime realEnd = finishingTime.isAfter(policy.limitExitTime()) ?
-                policy.limitExitTime() : finishingTime;
+        LocalTime realStart = policy.adjustEntry(startTime);
+        LocalTime realEnd = policy.adjustExit(finishingTime);
         this.validatedHours = Duration
                 .between(realStart, realEnd)
                 .minus(breakDuration);

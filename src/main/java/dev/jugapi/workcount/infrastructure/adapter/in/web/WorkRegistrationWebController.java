@@ -4,7 +4,6 @@ import dev.jugapi.workcount.application.service.WorkRegistrationService;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 import java.time.YearMonth;
 
 @RestController
@@ -19,9 +18,9 @@ public class WorkRegistrationWebController {
     }
 
     @GetMapping("/balance/{yearMonth}")
-    public Duration getBalance(@PathVariable("yearMonth") String yearMonth) {
+    public Double getBalance(@PathVariable("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        return service.calculateMonthlyBalance(ym);
+        return service.calculateMonthlyBalance(ym).toMinutes() / 60.0;
     }
 
     @PostMapping
