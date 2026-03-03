@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.domain.port;
+package dev.jugapi.workcount.domain.port.out;
 
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 

@@ -1,14 +1,17 @@
 package dev.jugapi.workcount.application.service;
 
+import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
+import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
+import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonth;
 import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
-import dev.jugapi.workcount.domain.port.DailyPolicyRepository;
-import dev.jugapi.workcount.domain.port.WorkMonthTemplateRepository;
-import dev.jugapi.workcount.domain.port.WorkRegistrationRepository;
+import dev.jugapi.workcount.domain.port.out.DailyPolicyRepository;
+import dev.jugapi.workcount.domain.port.out.WorkMonthTemplateRepository;
+import dev.jugapi.workcount.domain.port.out.WorkRegistrationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +21,9 @@ import java.time.YearMonth;
 import java.util.List;
 
 @Service
-public class WorkRegistrationService {
+public class WorkRegistrationService implements CalculateMonthlyBalanceUseCase,
+        FindByMonthUseCase, RegisterWorkDayUseCase {
+
     private final WorkRegistrationRepository wrRepo;
     private final WorkMonthTemplateRepository wmtRepo;
     private final DailyPolicyRepository dpRepo;
@@ -27,17 +32,17 @@ public class WorkRegistrationService {
     public WorkRegistrationService(WorkRegistrationRepository wrRpo,
                                    WorkMonthTemplateRepository wmtRepo,
                                    DailyPolicyRepository dpRepo,
-                                   @Value("${ss.policy.target-weekly-hours}") Duration weeklyHours) {
+                                   @Value("${ss.policy.target-weekly-hours}") Duration weeklyTarget) {
         this.wrRepo = wrRpo;
         this.wmtRepo = wmtRepo;
         this.dpRepo = dpRepo;
-        this.weeklyTarget = weeklyHours;
+        this.weeklyTarget = weeklyTarget;
     }
 
-    public void registerDay(WorkRegistration registration) {
+    public void registerWorkDay(WorkRegistration registration) {
         DayOfWeek day = registration.getWorkingDay().getDayOfWeek();
 
-        if(wrRepo.existsByWorkingDay(registration.getWorkingDay())){
+        if (wrRepo.existsByWorkingDay(registration.getWorkingDay())) {
             throw new AlreadyRegisteredDayException(registration.getWorkingDay());
         }
 

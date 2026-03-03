@@ -1,5 +1,8 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
+import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
+import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
+import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.application.service.WorkRegistrationService;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.web.bind.annotation.*;
@@ -9,23 +12,28 @@ import java.time.YearMonth;
 @RestController
 @RequestMapping("/api/work-registrations")
 public class WorkRegistrationWebController {
-    private final WorkRegistrationService service;
+
+    private final RegisterWorkDayUseCase registerWorkDayUseCase;
+    private final FindByMonthUseCase findByMonthUseCase;
+    private final CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
     private final WorkRegistrationWebMapper mapper;
 
-    public WorkRegistrationWebController(WorkRegistrationService service, WorkRegistrationWebMapper mapper) {
-        this.service = service;
+    public WorkRegistrationWebController(WorkRegistrationService service, RegisterWorkDayUseCase registerWorkDayUseCase, FindByMonthUseCase findByMonthUseCase, CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase, WorkRegistrationWebMapper mapper) {
+        this.registerWorkDayUseCase = registerWorkDayUseCase;
+        this.findByMonthUseCase = findByMonthUseCase;
+        this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
         this.mapper = mapper;
-    }
-
-    @GetMapping("/balance/{yearMonth}")
-    public Double getBalance(@PathVariable("yearMonth") String yearMonth) {
-        YearMonth ym = YearMonth.parse(yearMonth);
-        return service.calculateMonthlyBalance(ym).toMinutes() / 60.0;
     }
 
     @PostMapping
     public void registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);
-        service.registerDay(wr);
+        registerWorkDayUseCase.registerWorkDay(wr);
+    }
+
+    @GetMapping("/balance/{yearMonth}")
+    public Double getBalance(@PathVariable("yearMonth") String yearMonth) {
+        YearMonth ym = YearMonth.parse(yearMonth);
+        return calculateMonthlyBalanceUseCase.calculateMonthlyBalance(ym).toMinutes() / 60.0;
     }
 }

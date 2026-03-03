@@ -1,7 +1,7 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
 import dev.jugapi.workcount.domain.model.WorkRegistration;
-import dev.jugapi.workcount.domain.port.WorkRegistrationRepository;
+import dev.jugapi.workcount.domain.port.out.WorkRegistrationRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
