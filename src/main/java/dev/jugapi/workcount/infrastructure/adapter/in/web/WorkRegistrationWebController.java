@@ -24,7 +24,7 @@ public class WorkRegistrationWebController {
         this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
         this.mapper = mapper;
     }
-
+    // TODO: this should returns WorkRegistration -> "201 Created" http code response (change test)
     @PostMapping
     public void registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);
