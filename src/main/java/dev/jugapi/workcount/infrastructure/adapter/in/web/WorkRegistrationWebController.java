@@ -8,6 +8,7 @@ import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.YearMonth;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/work-registrations")
@@ -29,6 +30,12 @@ public class WorkRegistrationWebController {
     public void registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);
         registerWorkDayUseCase.registerWorkDay(wr);
+    }
+
+    @GetMapping("/search/month/{yearMonth}")
+    public List<WorkRegistration> findByMonth(@PathVariable("yearMonth") String yearMonth) {
+        YearMonth ym = YearMonth.parse(yearMonth);
+        return findByMonthUseCase.findByMonth(ym);
     }
 
     @GetMapping("/balance/{yearMonth}")
