@@ -3,7 +3,6 @@ package dev.jugapi.workcount.infrastructure.adapter.in.web;
 import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
 import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
-import dev.jugapi.workcount.application.service.WorkRegistrationService;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,7 @@ public class WorkRegistrationWebController {
     private final CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
     private final WorkRegistrationWebMapper mapper;
 
-    public WorkRegistrationWebController(WorkRegistrationService service, RegisterWorkDayUseCase registerWorkDayUseCase, FindByMonthUseCase findByMonthUseCase, CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase, WorkRegistrationWebMapper mapper) {
+    public WorkRegistrationWebController(RegisterWorkDayUseCase registerWorkDayUseCase, FindByMonthUseCase findByMonthUseCase, CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase, WorkRegistrationWebMapper mapper) {
         this.registerWorkDayUseCase = registerWorkDayUseCase;
         this.findByMonthUseCase = findByMonthUseCase;
         this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
