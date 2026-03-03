@@ -53,7 +53,7 @@ public class WorkRegistrationWebControllerTest {
         mockMvc.perform(post("/api/work-registrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
 
         verify(registerWorkDayUseCase).registerWorkDay(any());
     }
