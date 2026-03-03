@@ -19,13 +19,13 @@ public class WorkRegistrationWebController {
     private final CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
     private final WorkRegistrationWebMapper mapper;
 
-    public WorkRegistrationWebController(WorkRegistrationService service, RegisterWorkDayUseCase registerWorkDayUseCase, FindByMonthUseCase findByMonthUseCase, CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase, WorkRegistrationWebMapper mapper) {
+    public WorkRegistrationWebController(RegisterWorkDayUseCase registerWorkDayUseCase, FindByMonthUseCase findByMonthUseCase, CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase, WorkRegistrationWebMapper mapper) {
         this.registerWorkDayUseCase = registerWorkDayUseCase;
         this.findByMonthUseCase = findByMonthUseCase;
         this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
         this.mapper = mapper;
     }
-
+    // TODO: this should returns WorkRegistration -> "201 Created" http code response (change test)
     @PostMapping
     public void registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);
