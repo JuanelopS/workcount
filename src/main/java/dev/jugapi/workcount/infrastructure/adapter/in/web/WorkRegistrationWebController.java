@@ -3,7 +3,6 @@ package dev.jugapi.workcount.infrastructure.adapter.in.web;
 import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
 import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
-import dev.jugapi.workcount.application.service.WorkRegistrationService;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.web.bind.annotation.*;
 
