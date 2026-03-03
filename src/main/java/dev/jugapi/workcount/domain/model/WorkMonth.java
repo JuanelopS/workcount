@@ -17,8 +17,6 @@ public record WorkMonth(
     }
 
     public Duration calculateBalance() {
-        return targetHours.minus(this.calculateTotalHoursWorked());
+        return this.calculateTotalHoursWorked().minus(targetHours);
     }
-
-
 }
