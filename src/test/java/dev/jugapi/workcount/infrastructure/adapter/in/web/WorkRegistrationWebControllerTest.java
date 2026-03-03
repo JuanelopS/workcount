@@ -41,7 +41,7 @@ public class WorkRegistrationWebControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("Should return 201 Created")
+    @DisplayName("Should return 200 Ok")
     void shouldReturn201WhenRegistrationIsValid() throws Exception {
         WorkRegistrationWebRequest request = new WorkRegistrationWebRequest(
                 LocalDate.of(2026, 3, 3),
