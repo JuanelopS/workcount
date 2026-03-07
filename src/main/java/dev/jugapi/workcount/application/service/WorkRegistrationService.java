@@ -24,41 +24,41 @@ import java.util.List;
 public class WorkRegistrationService implements CalculateMonthlyBalanceUseCase,
         FindByMonthUseCase, RegisterWorkDayUseCase {
 
-    private final WorkRegistrationRepository wrRepo;
-    private final WorkMonthTemplateRepository wmtRepo;
-    private final DailyPolicyRepository dpRepo;
+    private final WorkRegistrationRepository workRegistrationRepository;
+    private final WorkMonthTemplateRepository workMonthTemplateRepository;
+    private final DailyPolicyRepository dailyPolicyRepository;
     private final Duration weeklyTarget;
 
-    public WorkRegistrationService(WorkRegistrationRepository wrRpo,
-                                   WorkMonthTemplateRepository wmtRepo,
-                                   DailyPolicyRepository dpRepo,
+    public WorkRegistrationService(WorkRegistrationRepository workRegistrationRepository,
+                                   WorkMonthTemplateRepository workMonthTemplateRepository,
+                                   DailyPolicyRepository dailyPolicyRepository,
                                    @Value("${ss.policy.target-weekly-hours}") Duration weeklyTarget) {
-        this.wrRepo = wrRpo;
-        this.wmtRepo = wmtRepo;
-        this.dpRepo = dpRepo;
+        this.workRegistrationRepository = workRegistrationRepository;
+        this.workMonthTemplateRepository = workMonthTemplateRepository;
+        this.dailyPolicyRepository = dailyPolicyRepository;
         this.weeklyTarget = weeklyTarget;
     }
 
-    public void registerWorkDay(WorkRegistration registration) {
-        DayOfWeek day = registration.getWorkingDay().getDayOfWeek();
+    public WorkRegistration registerWorkDay(WorkRegistration wr) {
+        DayOfWeek day = wr.getWorkingDay().getDayOfWeek();
 
-        if (wrRepo.existsByWorkingDay(registration.getWorkingDay())) {
-            throw new AlreadyRegisteredDayException(registration.getWorkingDay());
+        if (workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
+            throw new AlreadyRegisteredDayException(wr.getWorkingDay());
         }
 
-        DailyPolicy policy = dpRepo.getPolicyFor(day)
+        DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
-        registration = registration.validateHours(policy);
-        wrRepo.save(registration);
+        wr = wr.validateHours(policy);
+        return workRegistrationRepository.save(wr);
     }
 
     public List<WorkRegistration> findByMonth(YearMonth month) {
-        return wrRepo.findByMonth(month);
+        return workRegistrationRepository.findByMonth(month);
     }
 
     public Duration calculateMonthlyBalance(YearMonth month) {
-        List<WorkRegistration> registrations = wrRepo.findByMonth(month);
-        WorkMonthTemplate template = wmtRepo
+        List<WorkRegistration> registrations = workRegistrationRepository.findByMonth(month);
+        WorkMonthTemplate template = workMonthTemplateRepository
                 .getWorkMonthTemplate(month)
                 .orElseThrow(() -> new RuntimeException("Template not found: " + month));
         Duration target = template.monthlyTargetHours(this.weeklyTarget);

@@ -20,9 +20,10 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
-    public void save(WorkRegistration registration) {
+    public WorkRegistration save(WorkRegistration registration) {
         WorkRegistrationEntity entity = mapper.toEntity(registration);
-        repository.save(entity);
+        WorkRegistrationEntity result = repository.save(entity);
+        return mapper.toDomain(result);
     }
 
     @Override
