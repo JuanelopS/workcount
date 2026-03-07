@@ -66,4 +66,7 @@ public class WorkRegistrationWebControllerTest {
         verify(registerWorkDayUseCase).registerWorkDay(any());
     }
 
+    @Test
+    void
+
 }

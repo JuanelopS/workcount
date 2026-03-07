@@ -30,14 +30,6 @@ public class WorkRegistrationWebController {
         this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
         this.mapper = mapper;
     }
-    // TODO: this should returns WorkRegistration -> "201 Created" http code response (change test)
-/*
-    @PostMapping
-    public WorkRegistration registerWork(@RequestBody WorkRegistrationWebRequest wre) {
-        WorkRegistration wr = mapper.toDomain(wre);
-        return registerWorkDayUseCase.registerWorkDay(wr);
-    }
-*/
 
     @PostMapping
     public ResponseEntity<WorkRegistration> registerWork(@RequestBody WorkRegistrationWebRequest wre) {
@@ -47,14 +39,15 @@ public class WorkRegistrationWebController {
     }
 
     @GetMapping("/search/month/{yearMonth}")
-    public List<WorkRegistration> findByMonth(@PathVariable("yearMonth") String yearMonth) {
+    public ResponseEntity<List<WorkRegistration>> findByMonth(@PathVariable("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        return findByMonthUseCase.findByMonth(ym);
+        return ResponseEntity.ok(findByMonthUseCase.findByMonth(ym));
     }
 
     @GetMapping("/balance/{yearMonth}")
-    public Double getBalance(@PathVariable("yearMonth") String yearMonth) {
+    public ResponseEntity<Double> getBalance(@PathVariable("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        return calculateMonthlyBalanceUseCase.calculateMonthlyBalance(ym).toMinutes() / 60.0;
+        Double result = calculateMonthlyBalanceUseCase.calculateMonthlyBalance(ym).toMinutes() / 60.0;
+        return ResponseEntity.ok(result);
     }
 }
