@@ -41,7 +41,7 @@ public class WorkRegistrationWebControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("Should return 200 Ok")
+    @DisplayName("Should return 201 Created")
     void shouldReturn201WhenRegistrationIsValid() throws Exception {
         WorkRegistrationWebRequest request = new WorkRegistrationWebRequest(
                 LocalDate.of(2026, 3, 3),
@@ -53,7 +53,7 @@ public class WorkRegistrationWebControllerTest {
         mockMvc.perform(post("/api/work-registrations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         verify(registerWorkDayUseCase).registerWorkDay(any());
     }

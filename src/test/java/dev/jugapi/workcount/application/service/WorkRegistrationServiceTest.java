@@ -31,11 +31,11 @@ import static org.mockito.Mockito.when;
 public class WorkRegistrationServiceTest {
 
     @Mock
-    private WorkRegistrationRepository wrRepo;
+    private WorkRegistrationRepository workRegistrationRepository;
     @Mock
-    private WorkMonthTemplateRepository wmtRepo;
+    private WorkMonthTemplateRepository workMonthTemplate;
     @Mock
-    private DailyPolicyRepository dpRepo;
+    private DailyPolicyRepository dailyPolicyRepo;
 
     private Duration weeklyTarget;
     private WorkRegistrationService service;
@@ -47,7 +47,7 @@ public class WorkRegistrationServiceTest {
     @BeforeEach
     void setUp() {
         weeklyTarget = Duration.ofHours(37).plusMinutes(30);
-        service = new WorkRegistrationService(wrRepo, wmtRepo, dpRepo,
+        service = new WorkRegistrationService(workRegistrationRepository, workMonthTemplate, dailyPolicyRepo,
                 weeklyTarget);
         wr = new WorkRegistration(
                 LocalDate.of(2026, 3, 3),
@@ -68,24 +68,24 @@ public class WorkRegistrationServiceTest {
                 wr.getFinishingTime()
         );
 
-        when(wrRepo.existsByWorkingDay(any())).thenReturn(false);
-        when(dpRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.of(dp));
+        when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(false);
+        when(dailyPolicyRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.of(dp));
         service.registerWorkDay(wr);
-        verify(wrRepo).save(any(WorkRegistration.class));
+        verify(workRegistrationRepository).save(any(WorkRegistration.class));
     }
 
     @Test
     @DisplayName("Already registered working day error")
     void shouldThrowExceptionWhenDayIsAlreadyRegistered() {
-        when(wrRepo.existsByWorkingDay(any())).thenReturn(true);
+        when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(true);
         assertThrows(AlreadyRegisteredDayException.class, () -> service.registerWorkDay(wr));
     }
 
     @Test
     @DisplayName("Policy not found for that working day")
     void shouldThrowExceptionWhenPolicyNotFound() {
-        when(wrRepo.existsByWorkingDay(any())).thenReturn(false);
-        when(dpRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.empty());
+        when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(false);
+        when(dailyPolicyRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.empty());
         assertThrows(PolicyNotFoundException.class, () -> service.registerWorkDay(wr));
     }
 
@@ -108,7 +108,7 @@ public class WorkRegistrationServiceTest {
                         null,
                         Duration.ofHours(7)));
 
-        when(wrRepo.findByMonth(YearMonth.of(2026,2))).thenReturn(list);
+        when(workRegistrationRepository.findByMonth(YearMonth.of(2026,2))).thenReturn(list);
         List<WorkRegistration> result = service.findByMonth(YearMonth.of(2026, 2));
         assertEquals(2, result.size());
     }
@@ -135,8 +135,8 @@ public class WorkRegistrationServiceTest {
         WorkMonthTemplate template = new WorkMonthTemplate(month, 4);
         Duration target = template.monthlyTargetHours(this.weeklyTarget);
 
-        when(wrRepo.findByMonth(month)).thenReturn(list);
-        when(wmtRepo.getWorkMonthTemplate(month)).thenReturn(Optional.of(template));
+        when(workRegistrationRepository.findByMonth(month)).thenReturn(list);
+        when(workMonthTemplate.getWorkMonthTemplate(month)).thenReturn(Optional.of(template));
 
         Duration balance = service.calculateMonthlyBalance(month);
         Duration expectedBalance = Duration.ofHours(136).negated(); // -136
