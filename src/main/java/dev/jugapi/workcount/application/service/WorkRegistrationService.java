@@ -1,9 +1,11 @@
 package dev.jugapi.workcount.application.service;
 
 import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
+import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
 import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
+import dev.jugapi.workcount.domain.exception.InexistentRegisteredDay;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonth;
@@ -14,15 +16,17 @@ import dev.jugapi.workcount.domain.port.out.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.domain.port.out.WorkRegistrationRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
 @Service
-public class WorkRegistrationService implements CalculateMonthlyBalanceUseCase,
-        FindByMonthUseCase, RegisterWorkDayUseCase {
+public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWorkDayUseCase,
+        FindByMonthUseCase, CalculateMonthlyBalanceUseCase {
 
     private final WorkRegistrationRepository workRegistrationRepository;
     private final WorkMonthTemplateRepository workMonthTemplateRepository;
@@ -50,6 +54,15 @@ public class WorkRegistrationService implements CalculateMonthlyBalanceUseCase,
                 .orElseThrow(() -> new PolicyNotFoundException(day));
         wr = wr.validateHours(policy);
         return workRegistrationRepository.save(wr);
+    }
+
+    @Transactional
+    public void deleteByWorkingDay(LocalDate workingDay) {
+        if (workRegistrationRepository.existsByWorkingDay(workingDay)) {
+            workRegistrationRepository.deleteByWorkingDay(workingDay);
+        } else {
+            throw new InexistentRegisteredDay(workingDay);
+        }
     }
 
     public List<WorkRegistration> findByMonth(YearMonth month) {

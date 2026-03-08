@@ -4,9 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface SpringDataWorkRegistrationRepository extends
         JpaRepository<WorkRegistrationEntity, Long> {
-    List<WorkRegistrationEntity> findByWorkingDayBetween(LocalDate start, LocalDate end);
     boolean existsByWorkingDay(LocalDate date);
+    Optional<WorkRegistrationEntity> findByWorkingDay(LocalDate date);
+    List<WorkRegistrationEntity> findByWorkingDayBetween(LocalDate start, LocalDate end);
+    void deleteByWorkingDay(LocalDate workingDay);
 }

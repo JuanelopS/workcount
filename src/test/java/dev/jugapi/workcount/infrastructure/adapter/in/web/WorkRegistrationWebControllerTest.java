@@ -2,6 +2,7 @@ package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
+import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
 import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
@@ -22,8 +23,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +42,9 @@ public class WorkRegistrationWebControllerTest {
 
     @MockitoBean
     private CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
+
+    @MockitoBean
+    private DeleteWorkDayUseCase deleteWorkDayUseCase;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -109,5 +112,16 @@ public class WorkRegistrationWebControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(120.5));
+    }
+
+    @Test
+    @DisplayName("Should return http code 204 No Content")
+    void shouldReturn204WhenRegistrationIsDeleted() throws Exception {
+        mockMvc.perform(delete("/api/work-registrations/delete/{date}",
+                "2026-03-08")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(deleteWorkDayUseCase).deleteByWorkingDay(LocalDate.of(2026, 3, 8));
     }
 }

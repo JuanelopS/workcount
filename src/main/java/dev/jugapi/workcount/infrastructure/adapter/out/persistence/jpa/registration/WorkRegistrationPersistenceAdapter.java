@@ -3,6 +3,7 @@ package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registra
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import dev.jugapi.workcount.domain.port.out.WorkRegistrationRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -24,6 +25,11 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
         WorkRegistrationEntity entity = mapper.toEntity(registration);
         WorkRegistrationEntity result = repository.save(entity);
         return mapper.toDomain(result);
+    }
+
+    @Override
+    public void deleteByWorkingDay(LocalDate workingDay) {
+        repository.deleteByWorkingDay(workingDay);
     }
 
     @Override

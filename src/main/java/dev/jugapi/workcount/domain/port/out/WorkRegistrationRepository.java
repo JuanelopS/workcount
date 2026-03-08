@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface WorkRegistrationRepository {
     WorkRegistration save(WorkRegistration registration);
+    void deleteByWorkingDay(LocalDate workingDay);
     List<WorkRegistration> findByMonth(YearMonth month);
     boolean existsByWorkingDay(LocalDate date);
 }
