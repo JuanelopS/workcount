@@ -32,16 +32,17 @@ public class WorkRegistrationWebController {
     }
 
     @PostMapping
-    public ResponseEntity<WorkRegistration> registerWork(@RequestBody WorkRegistrationWebRequest wre) {
+    public ResponseEntity<WorkRegistrationWebResponse> registerWork(@RequestBody WorkRegistrationWebRequest wre) {
         WorkRegistration wr = mapper.toDomain(wre);
         WorkRegistration savedWr = registerWorkDayUseCase.registerWorkDay(wr);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedWr);
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(savedWr));
     }
 
     @GetMapping("/search/month/{yearMonth}")
-    public ResponseEntity<List<WorkRegistration>> findByMonth(@PathVariable("yearMonth") String yearMonth) {
+    public ResponseEntity<List<WorkRegistrationWebResponse>> findByMonth(@PathVariable("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        return ResponseEntity.ok(findByMonthUseCase.findByMonth(ym));
+        List<WorkRegistration> registrations = findByMonthUseCase.findByMonth(ym);
+        return ResponseEntity.ok(mapper.toResponseList(registrations));
     }
 
     @GetMapping("/balance/{yearMonth}")

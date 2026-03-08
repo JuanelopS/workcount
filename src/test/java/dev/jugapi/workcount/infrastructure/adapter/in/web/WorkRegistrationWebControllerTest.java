@@ -61,12 +61,9 @@ public class WorkRegistrationWebControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.workingDay").value("2026-03-03"));
+                .andExpect(jsonPath("$.validatedHours").value("8.0"));
 
         verify(registerWorkDayUseCase).registerWorkDay(any());
     }
-
-    @Test
-    void
 
 }
