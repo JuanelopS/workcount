@@ -2,9 +2,8 @@ package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registra
 
 import dev.jugapi.workcount.domain.exception.InexistentRegisteredDay;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
-import dev.jugapi.workcount.domain.port.out.WorkRegistrationRepository;
+import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
