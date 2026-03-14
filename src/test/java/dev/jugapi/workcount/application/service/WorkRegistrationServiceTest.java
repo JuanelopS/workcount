@@ -49,7 +49,7 @@ public class WorkRegistrationServiceTest {
         weeklyTarget = Duration.ofHours(37).plusMinutes(30);
         service = new WorkRegistrationService(workRegistrationRepository, workMonthTemplate, dailyPolicyRepo,
                 weeklyTarget);
-        wr = new WorkRegistration(
+        wr = WorkRegistration.of(
                 LocalDate.of(2026, 3, 3),
                 LocalTime.of(7, 30),
                 LocalTime.of(14, 30),
@@ -95,13 +95,13 @@ public class WorkRegistrationServiceTest {
     @DisplayName("Returns the list of days recorded in a month")
     void shouldReturnWorkRegistrationListByMonth() {
         List<WorkRegistration> list = List.of(
-                new WorkRegistration(
+                WorkRegistration.of(
                         LocalDate.of(2026, 2, 22),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),
                         null,
                         Duration.ofHours(7)),
-                new WorkRegistration(
+                WorkRegistration.of(
                         LocalDate.of(2026, 2, 23),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),
@@ -120,13 +120,13 @@ public class WorkRegistrationServiceTest {
     void shouldReturnMonthlyBalance() {
         YearMonth month = YearMonth.of(2026, 2);
         List<WorkRegistration> list = List.of(
-                new WorkRegistration(
+                WorkRegistration.of(
                         LocalDate.of(2026, 2, 22),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),
                         null,
                         Duration.ofHours(7)),
-                new WorkRegistration(
+                WorkRegistration.of(
                         LocalDate.of(2026, 2, 23),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),

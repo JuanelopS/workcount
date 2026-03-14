@@ -10,7 +10,7 @@ import java.util.List;
 public class WorkRegistrationWebMapper {
 
     public WorkRegistration toDomain(WorkRegistrationWebRequest request) {
-        return new WorkRegistration(
+        return WorkRegistration.of(
                 request.workingDay(),
                 request.startTime(),
                 request.finishingTime(),
@@ -20,7 +20,7 @@ public class WorkRegistrationWebMapper {
     }
 
     public WorkRegistrationWebResponse toResponse(WorkRegistration wr) {
-        return  new WorkRegistrationWebResponse(
+        return new WorkRegistrationWebResponse(
                 wr.getWorkingDay(),
                 wr.getStartTime(),
                 wr.getFinishingTime(),

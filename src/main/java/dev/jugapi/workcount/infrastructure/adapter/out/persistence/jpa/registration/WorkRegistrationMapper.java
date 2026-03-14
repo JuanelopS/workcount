@@ -18,7 +18,7 @@ public class WorkRegistrationMapper {
     }
 
     public WorkRegistration toDomain(WorkRegistrationEntity entity) {
-        return new WorkRegistration(
+        return WorkRegistration.of(
                 entity.getWorkingDay(),
                 entity.getStartTime(),
                 entity.getFinishingTime(),

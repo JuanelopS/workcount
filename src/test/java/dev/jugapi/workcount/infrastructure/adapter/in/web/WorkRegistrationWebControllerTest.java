@@ -52,7 +52,7 @@ public class WorkRegistrationWebControllerTest {
     @Test
     @DisplayName("Should return 201 Created")
     void shouldReturn201WhenRegistrationIsValid() throws Exception {
-        WorkRegistration request = new WorkRegistration(
+        WorkRegistration request = WorkRegistration.of(
                 LocalDate.of(2026, 3, 3),
                 LocalTime.of(8, 0),
                 LocalTime.of(16, 0),
@@ -62,7 +62,7 @@ public class WorkRegistrationWebControllerTest {
 
         when(registerWorkDayUseCase.registerWorkDay(any())).thenReturn(request);
 
-        mockMvc.perform(post("/api/work-registrations")
+        mockMvc.perform(post("/api/work-registrations/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -74,14 +74,14 @@ public class WorkRegistrationWebControllerTest {
     @Test
     @DisplayName("Should return a list with two records with data")
     void shouldReturnAListOfRecordsWhenMonthIsRequested() throws Exception {
-        WorkRegistration wr1 = new WorkRegistration(
+        WorkRegistration wr1 = WorkRegistration.of(
                 LocalDate.of(2026, 3, 3),
                 LocalTime.of(8, 0),
                 LocalTime.of(16, 0),
                 null,
                 Duration.ofHours(8)
         );
-        WorkRegistration wr2 = new WorkRegistration(
+        WorkRegistration wr2 = WorkRegistration.of(
                 LocalDate.of(2026, 3, 4),
                 LocalTime.of(8, 0),
                 LocalTime.of(16, 0),
