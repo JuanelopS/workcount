@@ -5,7 +5,7 @@ import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
 import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
-import dev.jugapi.workcount.domain.exception.InexistentRegisteredDay;
+import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonth;
@@ -61,7 +61,7 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
         if (workRegistrationRepository.existsByWorkingDay(workingDay)) {
             workRegistrationRepository.deleteByWorkingDay(workingDay);
         } else {
-            throw new InexistentRegisteredDay(workingDay);
+            throw new InexistentRegisteredDayException(workingDay);
         }
     }
 

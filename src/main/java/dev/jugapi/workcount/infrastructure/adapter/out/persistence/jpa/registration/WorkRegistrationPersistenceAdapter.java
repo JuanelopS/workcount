@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.domain.exception.InexistentRegisteredDay;
+import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
 import org.springframework.stereotype.Repository;
@@ -32,7 +32,7 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
         repository.findByWorkingDay(workingDay).ifPresentOrElse(
                 repository::delete,
                 () -> {
-                    throw new InexistentRegisteredDay(workingDay);
+                    throw new InexistentRegisteredDayException(workingDay);
                 }
         );
     }
