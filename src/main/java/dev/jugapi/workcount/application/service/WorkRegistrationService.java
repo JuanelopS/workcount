@@ -7,6 +7,7 @@ import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
+import dev.jugapi.workcount.domain.exception.TemplateNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonth;
 import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
@@ -73,7 +74,7 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
         List<WorkRegistration> registrations = workRegistrationRepository.findByMonth(month);
         WorkMonthTemplate template = workMonthTemplateRepository
                 .getWorkMonthTemplate(month)
-                .orElseThrow(() -> new RuntimeException("Template not found: " + month));
+                .orElseThrow(() -> new TemplateNotFoundException(month));
         Duration target = template.monthlyTargetHours(this.weeklyTarget);
         return new WorkMonth(month, registrations, target).calculateBalance();
     }
