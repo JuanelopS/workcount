@@ -70,6 +70,44 @@ public class WorkDay {
         return validatedHours.toHours() < 24;
     }
 
+    // refactorize to event-based-clocking
+
+    public void addClocking(Clocking clocking) {
+        if (registrations.size() % 2 != 0 && clocking.type() == ClockingType.IN) {
+            throw new InvalidClockingSequenceException(clocking);
+        }
+        if (registrations.size() % 2 == 0 && clocking.type() == ClockingType.OUT) {
+            throw new InvalidClockingSequenceException(clocking);
+        }
+        if (!registrations.isEmpty() && clocking.time().isBefore(registrations.getLast().time())) {
+            throw new InvalidClockingSequenceException(clocking);
+        }
+        if(registrations.isEmpty() && clocking.type() == ClockingType.OUT) {
+            throw new InvalidClockingSequenceException(clocking);
+        }
+
+        registrations.add(clocking);
+        registrations.sort(Comparator.comparing(Clocking::time));
+    }
+
+    public Duration calculateTotalHours() {
+        if (this.registrations.isEmpty())
+            return Duration.ZERO;
+
+        Duration total = Duration.ZERO;
+        LocalTime start = null;
+
+        for (Clocking clocking : this.registrations) {
+            if (clocking.type() == ClockingType.IN) {
+                start = clocking.time();
+            } else if (clocking.type() == ClockingType.OUT && start != null) {
+                total = total.plus(Duration.between(start, clocking.time()));
+                start = null;
+            }
+        }
+        return total;
+    }
+
     public WorkDay validateHours(DailyPolicy policy) {
         Optional<LocalTime> optRealStart = this.getStartTime();
         Optional<LocalTime> optRealFinishing = this.getFinishingTime();
@@ -98,40 +136,5 @@ public class WorkDay {
                 .minus(cutFinishing);
 
         return this;
-    }
-
-    // refactorize to event-based-clocking
-
-    public void addClocking(Clocking clocking) {
-        if (registrations.size() % 2 != 0 && clocking.type() == ClockingType.IN) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
-        if (registrations.size() % 2 == 0 && clocking.type() == ClockingType.OUT) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
-        if (!registrations.isEmpty() && clocking.time().isBefore(registrations.getLast().time())) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
-
-        registrations.add(clocking);
-        registrations.sort(Comparator.comparing(Clocking::time));
-    }
-
-    public Duration calculateTotalHours() {
-        if (this.registrations.isEmpty())
-            return Duration.ZERO;
-
-        Duration total = Duration.ZERO;
-        LocalTime start = null;
-
-        for (Clocking clocking : this.registrations) {
-            if (clocking.type() == ClockingType.IN) {
-                start = clocking.time();
-            } else if (clocking.type() == ClockingType.OUT && start != null) {
-                total = total.plus(Duration.between(start, clocking.time()));
-                start = null;
-            }
-        }
-        return total;
     }
 }
