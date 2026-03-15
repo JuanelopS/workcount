@@ -1,9 +1,6 @@
 package dev.jugapi.workcount.application.service;
 
-import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
-import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
-import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
+import dev.jugapi.workcount.application.port.in.*;
 import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
@@ -27,7 +24,7 @@ import java.util.List;
 
 @Service
 public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWorkDayUseCase,
-        FindByMonthUseCase, CalculateMonthlyBalanceUseCase {
+        FindByMonthUseCase, CalculateMonthlyBalanceUseCase, ModifyWorkDayUseCase {
 
     private final WorkRegistrationRepository workRegistrationRepository;
     private final WorkMonthTemplateRepository workMonthTemplateRepository;
@@ -45,11 +42,11 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
     }
 
     public WorkRegistration registerWorkDay(WorkRegistration wr) {
-        DayOfWeek day = wr.getWorkingDay().getDayOfWeek();
-
         if (workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
             throw new AlreadyRegisteredDayException(wr.getWorkingDay());
         }
+
+        DayOfWeek day = wr.getWorkingDay().getDayOfWeek();
 
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
@@ -77,5 +74,20 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
                 .orElseThrow(() -> new TemplateNotFoundException(month));
         Duration target = template.monthlyTargetHours(this.weeklyTarget);
         return new WorkMonth(month, registrations, target).calculateBalance();
+    }
+
+    @Override
+    public WorkRegistration modifyWorkDay(WorkRegistration wr) {
+        if(!workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
+            throw new InexistentRegisteredDayException(wr.getWorkingDay());
+        }
+
+        DayOfWeek day = wr.getWorkingDay().getDayOfWeek();
+        DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
+                .orElseThrow(() -> new PolicyNotFoundException(day));
+
+        wr = wr.validateHours(policy);
+
+        return workRegistrationRepository.save(wr);
     }
 }

@@ -1,9 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
-import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
-import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
-import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
+import dev.jugapi.workcount.application.port.in.*;
 import dev.jugapi.workcount.domain.model.WorkRegistration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +18,20 @@ public class WorkRegistrationWebController {
     private final FindByMonthUseCase findByMonthUseCase;
     private final CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
     private final DeleteWorkDayUseCase deleteWorkDayUseCase;
+    private final ModifyWorkDayUseCase modifyWorkDayUseCase;
     private final WorkRegistrationWebMapper mapper;
 
     public WorkRegistrationWebController(RegisterWorkDayUseCase registerWorkDayUseCase,
                                          FindByMonthUseCase findByMonthUseCase,
                                          CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase,
                                          DeleteWorkDayUseCase deleteWorkDayUseCase,
+                                         ModifyWorkDayUseCase modifyWorkDayUseCase,
                                          WorkRegistrationWebMapper mapper) {
         this.registerWorkDayUseCase = registerWorkDayUseCase;
         this.findByMonthUseCase = findByMonthUseCase;
         this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
         this.deleteWorkDayUseCase = deleteWorkDayUseCase;
+        this.modifyWorkDayUseCase = modifyWorkDayUseCase;
         this.mapper = mapper;
     }
 
@@ -41,6 +41,14 @@ public class WorkRegistrationWebController {
         WorkRegistration wr = mapper.toDomain(wre);
         WorkRegistration savedWr = registerWorkDayUseCase.registerWorkDay(wr);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(savedWr));
+    }
+
+    @PutMapping("/modify")
+    public ResponseEntity<WorkRegistrationWebResponse> modifyWork(
+            @RequestBody WorkRegistrationWebRequest wre) {
+        WorkRegistration wr = mapper.toDomain(wre);
+        WorkRegistration modified = modifyWorkDayUseCase.modifyWorkDay(wr);
+        return ResponseEntity.ok(mapper.toResponse(modified));
     }
 
     @DeleteMapping("/delete/{date}")

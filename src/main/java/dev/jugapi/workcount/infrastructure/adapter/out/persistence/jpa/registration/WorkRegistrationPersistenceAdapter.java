@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepository {
@@ -23,6 +24,14 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     @Override
     public WorkRegistration save(WorkRegistration registration) {
         WorkRegistrationEntity entity = mapper.toEntity(registration);
+
+        // upsert logic (id != null ? update : insert)
+        Optional<WorkRegistrationEntity> existing = repository
+                .findByWorkingDay(registration.getWorkingDay());
+
+        existing.ifPresent(workRegistrationEntity
+                -> entity.setId(workRegistrationEntity.getId()));
+
         WorkRegistrationEntity result = repository.save(entity);
         return mapper.toDomain(result);
     }
