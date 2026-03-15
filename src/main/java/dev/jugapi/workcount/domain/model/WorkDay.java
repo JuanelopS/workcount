@@ -32,6 +32,10 @@ public class WorkDay {
         return new WorkDay(workingDay, registrations, validatedHours);
     }
 
+    public static WorkDay create(LocalDate workingDay){
+        return new WorkDay(workingDay, List.of(), Duration.ZERO);
+    }
+
     public LocalDate getWorkingDay() {
         return workingDay;
     }

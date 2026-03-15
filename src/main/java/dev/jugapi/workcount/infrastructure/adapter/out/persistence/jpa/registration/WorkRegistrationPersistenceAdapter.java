@@ -47,6 +47,12 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
+    public Optional<WorkDay> findByWorkingDay(LocalDate date) {
+        return repository.findByWorkingDay(date)
+                .map(mapper::toDomain);
+    }
+
+    @Override
     public List<WorkDay> findByMonth(YearMonth month) {
         LocalDate firstDay = month.atDay(1);
         LocalDate lastDay = month.atEndOfMonth();

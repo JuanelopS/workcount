@@ -5,10 +5,7 @@ import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.exception.TemplateNotFoundException;
-import dev.jugapi.workcount.domain.model.DailyPolicy;
-import dev.jugapi.workcount.domain.model.WorkMonth;
-import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.*;
 import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
 import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
@@ -16,15 +13,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.YearMonth;
+import java.time.*;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWorkDayUseCase,
-        FindByMonthUseCase, CalculateMonthlyBalanceUseCase, ModifyWorkDayUseCase {
+        FindByMonthUseCase, CalculateMonthlyBalanceUseCase, ModifyWorkDayUseCase, ClockInUseCase {
 
     private final WorkRegistrationRepository workRegistrationRepository;
     private final WorkMonthTemplateRepository workMonthTemplateRepository;
@@ -41,25 +36,25 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
         this.weeklyTarget = weeklyTarget;
     }
 
-    public WorkDay registerWorkDay(WorkDay wr) {
-        if (workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
-            throw new AlreadyRegisteredDayException(wr.getWorkingDay());
+    public WorkDay registerWorkDay(WorkDay wd) {
+        if (workRegistrationRepository.existsByWorkingDay(wd.getWorkingDay())) {
+            throw new AlreadyRegisteredDayException(wd.getWorkingDay());
         }
 
-        DayOfWeek day = wr.getWorkingDay().getDayOfWeek();
+        DayOfWeek day = wd.getWorkingDay().getDayOfWeek();
 
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
-        wr = wr.validateHours(policy);
-        return workRegistrationRepository.save(wr);
+        wd = wd.validateHours(policy);
+        return workRegistrationRepository.save(wd);
     }
 
     @Transactional
-    public void deleteByWorkingDay(LocalDate workingDay) {
-        if (workRegistrationRepository.existsByWorkingDay(workingDay)) {
-            workRegistrationRepository.deleteByWorkingDay(workingDay);
+    public void deleteByWorkingDay(LocalDate wd) {
+        if (workRegistrationRepository.existsByWorkingDay(wd)) {
+            workRegistrationRepository.deleteByWorkingDay(wd);
         } else {
-            throw new InexistentRegisteredDayException(workingDay);
+            throw new InexistentRegisteredDayException(wd);
         }
     }
 
@@ -77,17 +72,31 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
     }
 
     @Override
-    public WorkDay modifyWorkDay(WorkDay wr) {
-        if(!workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
-            throw new InexistentRegisteredDayException(wr.getWorkingDay());
+    public WorkDay modifyWorkDay(WorkDay wd) {
+        if(!workRegistrationRepository.existsByWorkingDay(wd.getWorkingDay())) {
+            throw new InexistentRegisteredDayException(wd.getWorkingDay());
         }
 
-        DayOfWeek day = wr.getWorkingDay().getDayOfWeek();
+        DayOfWeek day = wd.getWorkingDay().getDayOfWeek();
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 
-        wr = wr.validateHours(policy);
+        wd = wd.validateHours(policy);
 
-        return workRegistrationRepository.save(wr);
+        return workRegistrationRepository.save(wd);
+    }
+
+    @Override
+    public WorkDay clockIn(ClockingType type) {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        Optional<WorkDay> optWorkDay = workRegistrationRepository.findByWorkingDay(today);
+
+        WorkDay workDay = optWorkDay.orElseGet(() -> WorkDay.create(today));
+
+        Clocking clocking = new Clocking(now, type);
+        workDay.addClocking(clocking);
+
+        return workRegistrationRepository.save(workDay);
     }
 }
