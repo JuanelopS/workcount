@@ -8,7 +8,7 @@ import dev.jugapi.workcount.domain.exception.TemplateNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonth;
 import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
 import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
@@ -41,7 +41,7 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
         this.weeklyTarget = weeklyTarget;
     }
 
-    public WorkRegistration registerWorkDay(WorkRegistration wr) {
+    public WorkDay registerWorkDay(WorkDay wr) {
         if (workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
             throw new AlreadyRegisteredDayException(wr.getWorkingDay());
         }
@@ -63,12 +63,12 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
         }
     }
 
-    public List<WorkRegistration> findByMonth(YearMonth month) {
+    public List<WorkDay> findByMonth(YearMonth month) {
         return workRegistrationRepository.findByMonth(month);
     }
 
     public Duration calculateMonthlyBalance(YearMonth month) {
-        List<WorkRegistration> registrations = workRegistrationRepository.findByMonth(month);
+        List<WorkDay> registrations = workRegistrationRepository.findByMonth(month);
         WorkMonthTemplate template = workMonthTemplateRepository
                 .getWorkMonthTemplate(month)
                 .orElseThrow(() -> new TemplateNotFoundException(month));
@@ -77,7 +77,7 @@ public class WorkRegistrationService implements RegisterWorkDayUseCase, DeleteWo
     }
 
     @Override
-    public WorkRegistration modifyWorkDay(WorkRegistration wr) {
+    public WorkDay modifyWorkDay(WorkDay wr) {
         if(!workRegistrationRepository.existsByWorkingDay(wr.getWorkingDay())) {
             throw new InexistentRegisteredDayException(wr.getWorkingDay());
         }

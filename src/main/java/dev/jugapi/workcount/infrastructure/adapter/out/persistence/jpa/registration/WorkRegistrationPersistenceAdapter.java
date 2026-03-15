@@ -1,7 +1,7 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
 import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +22,7 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
-    public WorkRegistration save(WorkRegistration registration) {
+    public WorkDay save(WorkDay registration) {
         WorkRegistrationEntity entity = mapper.toEntity(registration);
 
         // upsert logic (id != null ? update : insert)
@@ -47,7 +47,7 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
-    public List<WorkRegistration> findByMonth(YearMonth month) {
+    public List<WorkDay> findByMonth(YearMonth month) {
         LocalDate firstDay = month.atDay(1);
         LocalDate lastDay = month.atEndOfMonth();
         List<WorkRegistrationEntity> list = repository.findByWorkingDayBetween(firstDay, lastDay);

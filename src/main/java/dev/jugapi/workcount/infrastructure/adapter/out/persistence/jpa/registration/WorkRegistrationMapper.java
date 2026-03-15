@@ -1,12 +1,12 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WorkRegistrationMapper {
 
-    public WorkRegistrationEntity toEntity(WorkRegistration domain) {
+    public WorkRegistrationEntity toEntity(WorkDay domain) {
         WorkRegistrationEntity entity = new WorkRegistrationEntity();
         entity.setId(null);
         entity.setWorkingDay(domain.getWorkingDay());
@@ -17,8 +17,8 @@ public class WorkRegistrationMapper {
         return entity;
     }
 
-    public WorkRegistration toDomain(WorkRegistrationEntity entity) {
-        return WorkRegistration.of(
+    public WorkDay toDomain(WorkRegistrationEntity entity) {
+        return WorkDay.of(
                 entity.getWorkingDay(),
                 entity.getStartTime(),
                 entity.getFinishingTime(),

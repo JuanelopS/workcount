@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -9,8 +9,8 @@ import java.util.List;
 @Component
 public class WorkRegistrationWebMapper {
 
-    public WorkRegistration toDomain(WorkRegistrationWebRequest request) {
-        return WorkRegistration.of(
+    public WorkDay toDomain(WorkRegistrationWebRequest request) {
+        return WorkDay.of(
                 request.workingDay(),
                 request.startTime(),
                 request.finishingTime(),
@@ -19,7 +19,7 @@ public class WorkRegistrationWebMapper {
         );
     }
 
-    public WorkRegistrationWebResponse toResponse(WorkRegistration wr) {
+    public WorkRegistrationWebResponse toResponse(WorkDay wr) {
         return new WorkRegistrationWebResponse(
                 wr.getWorkingDay(),
                 wr.getStartTime(),
@@ -29,7 +29,7 @@ public class WorkRegistrationWebMapper {
         );
     }
 
-    public List<WorkRegistrationWebResponse> toResponseList(List<WorkRegistration> list) {
+    public List<WorkRegistrationWebResponse> toResponseList(List<WorkDay> list) {
         return list.stream()
                 .map(this::toResponse)
                 .toList();

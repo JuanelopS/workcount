@@ -1,7 +1,7 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
 import dev.jugapi.workcount.application.port.in.*;
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,16 +38,16 @@ public class WorkRegistrationWebController {
     @PostMapping("/save")
     public ResponseEntity<WorkRegistrationWebResponse> registerWork(
             @RequestBody WorkRegistrationWebRequest wre) {
-        WorkRegistration wr = mapper.toDomain(wre);
-        WorkRegistration savedWr = registerWorkDayUseCase.registerWorkDay(wr);
+        WorkDay wr = mapper.toDomain(wre);
+        WorkDay savedWr = registerWorkDayUseCase.registerWorkDay(wr);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(savedWr));
     }
 
     @PutMapping("/modify")
     public ResponseEntity<WorkRegistrationWebResponse> modifyWork(
             @RequestBody WorkRegistrationWebRequest wre) {
-        WorkRegistration wr = mapper.toDomain(wre);
-        WorkRegistration modified = modifyWorkDayUseCase.modifyWorkDay(wr);
+        WorkDay wr = mapper.toDomain(wre);
+        WorkDay modified = modifyWorkDayUseCase.modifyWorkDay(wr);
         return ResponseEntity.ok(mapper.toResponse(modified));
     }
 
@@ -62,7 +62,7 @@ public class WorkRegistrationWebController {
     public ResponseEntity<List<WorkRegistrationWebResponse>> findByMonth(
             @PathVariable("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        List<WorkRegistration> registrations = findByMonthUseCase.findByMonth(ym);
+        List<WorkDay> registrations = findByMonthUseCase.findByMonth(ym);
         return ResponseEntity.ok(mapper.toResponseList(registrations));
     }
 

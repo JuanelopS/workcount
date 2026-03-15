@@ -6,7 +6,7 @@ import java.util.List;
 
 public record WorkMonth(
         YearMonth month,
-        List<WorkRegistration> registrations,
+        List<WorkDay> registrations,
         Duration targetHours) {
 
     public WorkMonth {
@@ -24,7 +24,7 @@ public record WorkMonth(
 
     public Duration calculateTotalHoursWorked() {
         return registrations.stream()
-                .map(WorkRegistration::getValidatedHours)
+                .map(WorkDay::getValidatedHours)
                 .reduce(Duration::plus)
                 .orElse(Duration.ZERO);
     }

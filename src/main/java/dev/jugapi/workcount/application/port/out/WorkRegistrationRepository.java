@@ -1,14 +1,14 @@
 package dev.jugapi.workcount.application.port.out;
 
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
 public interface WorkRegistrationRepository {
-    WorkRegistration save(WorkRegistration registration);
+    WorkDay save(WorkDay registration);
     void deleteByWorkingDay(LocalDate workingDay);
-    List<WorkRegistration> findByMonth(YearMonth month);
+    List<WorkDay> findByMonth(YearMonth month);
     boolean existsByWorkingDay(LocalDate date);
 }

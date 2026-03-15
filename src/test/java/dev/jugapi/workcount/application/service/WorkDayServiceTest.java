@@ -4,7 +4,7 @@ import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
 import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class WorkRegistrationServiceTest {
+public class WorkDayServiceTest {
 
     @Mock
     private WorkRegistrationRepository workRegistrationRepository;
@@ -39,9 +39,9 @@ public class WorkRegistrationServiceTest {
 
     private Duration weeklyTarget;
     private WorkRegistrationService service;
-    private WorkRegistration wr;
+    private WorkDay wr;
 
-    public WorkRegistrationServiceTest() {
+    public WorkDayServiceTest() {
     }
 
     @BeforeEach
@@ -49,7 +49,7 @@ public class WorkRegistrationServiceTest {
         weeklyTarget = Duration.ofHours(37).plusMinutes(30);
         service = new WorkRegistrationService(workRegistrationRepository, workMonthTemplate, dailyPolicyRepo,
                 weeklyTarget);
-        wr = WorkRegistration.of(
+        wr = WorkDay.of(
                 LocalDate.of(2026, 3, 3),
                 LocalTime.of(7, 30),
                 LocalTime.of(14, 30),
@@ -71,7 +71,7 @@ public class WorkRegistrationServiceTest {
         when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(false);
         when(dailyPolicyRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.of(dp));
         service.registerWorkDay(wr);
-        verify(workRegistrationRepository).save(any(WorkRegistration.class));
+        verify(workRegistrationRepository).save(any(WorkDay.class));
     }
 
     @Test
@@ -94,14 +94,14 @@ public class WorkRegistrationServiceTest {
     @Test
     @DisplayName("Returns the list of days recorded in a month")
     void shouldReturnWorkRegistrationListByMonth() {
-        List<WorkRegistration> list = List.of(
-                WorkRegistration.of(
+        List<WorkDay> list = List.of(
+                WorkDay.of(
                         LocalDate.of(2026, 2, 22),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),
                         null,
                         Duration.ofHours(7)),
-                WorkRegistration.of(
+                WorkDay.of(
                         LocalDate.of(2026, 2, 23),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),
@@ -109,7 +109,7 @@ public class WorkRegistrationServiceTest {
                         Duration.ofHours(7)));
 
         when(workRegistrationRepository.findByMonth(YearMonth.of(2026,2))).thenReturn(list);
-        List<WorkRegistration> result = service.findByMonth(YearMonth.of(2026, 2));
+        List<WorkDay> result = service.findByMonth(YearMonth.of(2026, 2));
         assertEquals(2, result.size());
     }
 
@@ -119,14 +119,14 @@ public class WorkRegistrationServiceTest {
     @DisplayName("Returns a balance of 136 hours")
     void shouldReturnMonthlyBalance() {
         YearMonth month = YearMonth.of(2026, 2);
-        List<WorkRegistration> list = List.of(
-                WorkRegistration.of(
+        List<WorkDay> list = List.of(
+                WorkDay.of(
                         LocalDate.of(2026, 2, 22),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),
                         null,
                         Duration.ofHours(7)),
-                WorkRegistration.of(
+                WorkDay.of(
                         LocalDate.of(2026, 2, 23),
                         LocalTime.of(7, 30),
                         LocalTime.of(14, 30),

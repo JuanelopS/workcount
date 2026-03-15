@@ -5,7 +5,7 @@ import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
 import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
 import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
-import dev.jugapi.workcount.domain.model.WorkRegistration;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(WorkRegistrationWebController.class)
 @Import(WorkRegistrationWebMapper.class)
-public class WorkRegistrationWebControllerTest {
+public class WorkDayWebControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,7 +52,7 @@ public class WorkRegistrationWebControllerTest {
     @Test
     @DisplayName("Should return 201 Created")
     void shouldReturn201WhenRegistrationIsValid() throws Exception {
-        WorkRegistration request = WorkRegistration.of(
+        WorkDay request = WorkDay.of(
                 LocalDate.of(2026, 3, 3),
                 LocalTime.of(8, 0),
                 LocalTime.of(16, 0),
@@ -74,14 +74,14 @@ public class WorkRegistrationWebControllerTest {
     @Test
     @DisplayName("Should return a list with two records with data")
     void shouldReturnAListOfRecordsWhenMonthIsRequested() throws Exception {
-        WorkRegistration wr1 = WorkRegistration.of(
+        WorkDay wr1 = WorkDay.of(
                 LocalDate.of(2026, 3, 3),
                 LocalTime.of(8, 0),
                 LocalTime.of(16, 0),
                 null,
                 Duration.ofHours(8)
         );
-        WorkRegistration wr2 = WorkRegistration.of(
+        WorkDay wr2 = WorkDay.of(
                 LocalDate.of(2026, 3, 4),
                 LocalTime.of(8, 0),
                 LocalTime.of(16, 0),
@@ -89,7 +89,7 @@ public class WorkRegistrationWebControllerTest {
                 Duration.ofHours(8)
         );
 
-        List<WorkRegistration> list = List.of(wr1, wr2);
+        List<WorkDay> list = List.of(wr1, wr2);
 
         when(findByMonthUseCase.findByMonth(any())).thenReturn(list);
 
