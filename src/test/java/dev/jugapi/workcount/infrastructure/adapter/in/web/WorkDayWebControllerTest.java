@@ -1,9 +1,9 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.jugapi.workcount.application.port.in.CalculateMonthlyBalanceUseCase;
-import dev.jugapi.workcount.application.port.in.DeleteWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.FindByMonthUseCase;
+import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
+import dev.jugapi.workcount.application.port.in.workday.DeleteWorkDayUseCase;
+import dev.jugapi.workcount.application.port.in.workday.FindWorkDayByMonthUseCase;
 import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
 import dev.jugapi.workcount.domain.model.WorkDay;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +38,7 @@ public class WorkDayWebControllerTest {
     private RegisterWorkDayUseCase registerWorkDayUseCase;
 
     @MockitoBean
-    private FindByMonthUseCase findByMonthUseCase;
+    private FindWorkDayByMonthUseCase findWorkDayByMonthUseCase;
 
     @MockitoBean
     private CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
@@ -91,7 +91,7 @@ public class WorkDayWebControllerTest {
 
         List<WorkDay> list = List.of(wr1, wr2);
 
-        when(findByMonthUseCase.findByMonth(any())).thenReturn(list);
+        when(findWorkDayByMonthUseCase.findWorkDayByMonth(any())).thenReturn(list);
 
         mockMvc.perform(get("/api/work-registrations/search/month/2026-03")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -122,6 +122,6 @@ public class WorkDayWebControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(deleteWorkDayUseCase).deleteByWorkingDay(LocalDate.of(2026, 3, 8));
+        verify(deleteWorkDayUseCase).deleteWorkDay(LocalDate.of(2026, 3, 8));
     }
 }

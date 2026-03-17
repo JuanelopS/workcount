@@ -4,6 +4,7 @@ import dev.jugapi.workcount.application.port.in.clocking.CreateClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.DeleteClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.UpdateClockingUseCase;
 import dev.jugapi.workcount.application.port.out.WorkDayRepository;
+import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.model.Clocking;
 import dev.jugapi.workcount.domain.model.ClockingType;
 import dev.jugapi.workcount.domain.model.WorkDay;
@@ -38,8 +39,11 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
     }
 
     @Override
-    public void updateClocking(LocalDate date, LocalTime time) {
-        if(!workDayRepository.findByDate(date))
+    public void updateClocking(LocalDate date, LocalTime originalTime, LocalTime newTime) {
+        WorkDay wd = workDayRepository.findByDate(date)
+                .orElseThrow(() -> new InexistentWorkDayException(date));
+
+        wd.updateClocking(originalTime, newTime);
     }
 
     @Override

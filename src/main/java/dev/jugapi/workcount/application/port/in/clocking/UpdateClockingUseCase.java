@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public interface UpdateClockingUseCase {
-    void updateClocking(LocalDate date, LocalTime time);
+    void updateClocking(LocalDate date, LocalTime originalTime, LocalTime newTime);
 }

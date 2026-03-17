@@ -1,5 +1,6 @@
 package dev.jugapi.workcount.domain.model;
 
+import dev.jugapi.workcount.domain.exception.InexistentClockingException;
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
 
 import java.time.Duration;
@@ -30,7 +31,7 @@ public class WorkDay {
         return new WorkDay(day, registrations, validatedHours);
     }
 
-    public static WorkDay create(LocalDate day){
+    public static WorkDay create(LocalDate day) {
         return new WorkDay(day, List.of(), Duration.ZERO);
     }
 
@@ -85,12 +86,42 @@ public class WorkDay {
         if (!registrations.isEmpty() && clocking.time().isBefore(registrations.getLast().time())) {
             throw new InvalidClockingSequenceException(clocking);
         }
-        if(registrations.isEmpty() && clocking.type() == ClockingType.OUT) {
+        if (registrations.isEmpty() && clocking.type() == ClockingType.OUT) {
             throw new InvalidClockingSequenceException(clocking);
         }
 
         registrations.add(clocking);
         registrations.sort(Comparator.comparing(Clocking::time));
+    }
+
+    public void updateClocking(LocalTime originalTime, LocalTime newTime) {
+        if (registrations.isEmpty()) {
+            throw new InexistentClockingException(originalTime);
+        }
+
+        Optional<Clocking> opt = registrations.stream()
+                .filter(c -> c.time().equals(originalTime))
+                .findFirst();
+
+        if (opt.isEmpty()) {
+            throw new InexistentClockingException(originalTime);
+        }
+
+        Clocking originalClocking = opt.get();
+        int originalIndex = registrations.indexOf(originalClocking);
+
+        Clocking newClocking = new Clocking(newTime, registrations.get(originalIndex).type());
+
+        if (validateBeforePreviousClocking(originalIndex, newTime) ||
+                validateAfterNextClocking(originalIndex, newTime)) {
+            throw new InvalidClockingSequenceException(newClocking);
+        }
+
+        registrations.set(originalIndex, newClocking);
+    }
+
+    public void removeClocking(Clocking clocking) {
+
     }
 
     public Duration calculateTotalHours() {
@@ -142,9 +173,19 @@ public class WorkDay {
     }
 
     public Optional<ClockingType> getCurrentStatus() {
-        if(this.registrations.isEmpty()){
+        if (this.registrations.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(this.registrations.getLast().type());
     }
+
+    private boolean validateBeforePreviousClocking(int index, LocalTime time){
+        return index > 0 && time.isBefore(registrations.get(index - 1).time());
+    }
+
+    private boolean validateAfterNextClocking(int index, LocalTime time){
+        return index < (registrations.size() - 1) &&
+                time.isAfter(registrations.get(index + 1).time());
+    }
+
 }

@@ -1,8 +1,8 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.domain.exception.InexistentRegisteredDayException;
+import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.model.WorkDay;
-import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
+import dev.jugapi.workcount.application.port.out.WorkDayRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepository {
+public class WorkRegistrationPersistenceAdapter implements WorkDayRepository {
     private final SpringDataWorkRegistrationRepository repository;
     private final WorkRegistrationMapper mapper;
 
@@ -22,12 +22,12 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
-    public WorkDay save(WorkDay registration) {
-        WorkRegistrationEntity entity = mapper.toEntity(registration);
+    public WorkDay save(WorkDay workDay) {
+        WorkRegistrationEntity entity = mapper.toEntity(workDay);
 
         // upsert logic (id != null ? update : insert)
         Optional<WorkRegistrationEntity> existing = repository
-                .findByWorkingDay(registration.getWorkingDay());
+                .findByWorkingDay(workDay.getDay());
 
         existing.ifPresent(workRegistrationEntity
                 -> entity.setId(workRegistrationEntity.getId()));
@@ -37,17 +37,22 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
-    public void deleteByWorkingDay(LocalDate workingDay) {
+    public void update(WorkDay workDay) {
+
+    }
+
+    @Override
+    public void delete(LocalDate workingDay) {
         repository.findByWorkingDay(workingDay).ifPresentOrElse(
                 repository::delete,
                 () -> {
-                    throw new InexistentRegisteredDayException(workingDay);
+                    throw new InexistentWorkDayException(workingDay);
                 }
         );
     }
 
     @Override
-    public Optional<WorkDay> findByWorkingDay(LocalDate date) {
+    public Optional<WorkDay> findByDate(LocalDate date) {
         return repository.findByWorkingDay(date)
                 .map(mapper::toDomain);
     }
@@ -63,7 +68,7 @@ public class WorkRegistrationPersistenceAdapter implements WorkRegistrationRepos
     }
 
     @Override
-    public boolean existsByWorkingDay(LocalDate date) {
+    public boolean exists(LocalDate date) {
         return repository.existsByWorkingDay(date);
     }
 }

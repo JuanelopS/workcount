@@ -21,7 +21,7 @@ public class WorkRegistrationWebMapper {
 
     public WorkRegistrationWebResponse toResponse(WorkDay wr) {
         return new WorkRegistrationWebResponse(
-                wr.getWorkingDay(),
+                wr.getDay(),
                 wr.getStartTime(),
                 wr.getFinishingTime(),
                 wr.getBreakDuration(),

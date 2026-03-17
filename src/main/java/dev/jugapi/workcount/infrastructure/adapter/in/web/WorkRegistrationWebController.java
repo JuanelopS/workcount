@@ -1,6 +1,9 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
-import dev.jugapi.workcount.application.port.in.*;
+import dev.jugapi.workcount.application.port.in.workday.DeleteWorkDayUseCase;
+import dev.jugapi.workcount.application.port.in.workday.FindWorkDayByMonthUseCase;
+import dev.jugapi.workcount.application.port.in.workday.UpdateWorkDayUseCase;
+import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
 import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,23 +18,23 @@ import java.util.List;
 public class WorkRegistrationWebController {
 
     private final RegisterWorkDayUseCase registerWorkDayUseCase;
-    private final FindByMonthUseCase findByMonthUseCase;
+    private final FindWorkDayByMonthUseCase findWorkDayByMonthUseCase;
     private final CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
     private final DeleteWorkDayUseCase deleteWorkDayUseCase;
-    private final ModifyWorkDayUseCase modifyWorkDayUseCase;
+    private final UpdateWorkDayUseCase updateWorkDayUseCase;
     private final WorkRegistrationWebMapper mapper;
 
     public WorkRegistrationWebController(RegisterWorkDayUseCase registerWorkDayUseCase,
-                                         FindByMonthUseCase findByMonthUseCase,
+                                         FindWorkDayByMonthUseCase findWorkDayByMonthUseCase,
                                          CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase,
                                          DeleteWorkDayUseCase deleteWorkDayUseCase,
-                                         ModifyWorkDayUseCase modifyWorkDayUseCase,
+                                         UpdateWorkDayUseCase updateWorkDayUseCase,
                                          WorkRegistrationWebMapper mapper) {
         this.registerWorkDayUseCase = registerWorkDayUseCase;
-        this.findByMonthUseCase = findByMonthUseCase;
+        this.findWorkDayByMonthUseCase = findWorkDayByMonthUseCase;
         this.calculateMonthlyBalanceUseCase = calculateMonthlyBalanceUseCase;
         this.deleteWorkDayUseCase = deleteWorkDayUseCase;
-        this.modifyWorkDayUseCase = modifyWorkDayUseCase;
+        this.updateWorkDayUseCase = updateWorkDayUseCase;
         this.mapper = mapper;
     }
 
@@ -47,14 +50,14 @@ public class WorkRegistrationWebController {
     public ResponseEntity<WorkRegistrationWebResponse> modifyWork(
             @RequestBody WorkRegistrationWebRequest wre) {
         WorkDay wr = mapper.toDomain(wre);
-        WorkDay modified = modifyWorkDayUseCase.modifyWorkDay(wr);
+        WorkDay modified = updateWorkDayUseCase.updateWorkDay(wr);
         return ResponseEntity.ok(mapper.toResponse(modified));
     }
 
     @DeleteMapping("/delete/{date}")
     public ResponseEntity<Void> deleteWork(
             @PathVariable("date") String date) {
-        deleteWorkDayUseCase.deleteByWorkingDay(LocalDate.parse(date));
+        deleteWorkDayUseCase.deleteWorkDay(LocalDate.parse(date));
         return ResponseEntity.noContent().build();
     }
 
@@ -62,7 +65,7 @@ public class WorkRegistrationWebController {
     public ResponseEntity<List<WorkRegistrationWebResponse>> findByMonth(
             @PathVariable("yearMonth") String yearMonth) {
         YearMonth ym = YearMonth.parse(yearMonth);
-        List<WorkDay> registrations = findByMonthUseCase.findByMonth(ym);
+        List<WorkDay> registrations = findWorkDayByMonthUseCase.findWorkDayByMonth(ym);
         return ResponseEntity.ok(mapper.toResponseList(registrations));
     }
 

@@ -1,13 +1,13 @@
 package dev.jugapi.workcount.application.service;
 
-import dev.jugapi.workcount.domain.exception.AlreadyRegisteredDayException;
+import dev.jugapi.workcount.domain.exception.AlreadyWorkDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
 import dev.jugapi.workcount.domain.model.DailyPolicy;
 import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
 import dev.jugapi.workcount.domain.model.WorkDay;
 import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
 import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
-import dev.jugapi.workcount.application.port.out.WorkRegistrationRepository;
+import dev.jugapi.workcount.application.port.out.WorkDayRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,14 +31,14 @@ import static org.mockito.Mockito.when;
 public class WorkDayServiceTest {
 
     @Mock
-    private WorkRegistrationRepository workRegistrationRepository;
+    private WorkDayRepository workDayRepository;
     @Mock
     private WorkMonthTemplateRepository workMonthTemplate;
     @Mock
     private DailyPolicyRepository dailyPolicyRepo;
 
     private Duration weeklyTarget;
-    private WorkRegistrationService service;
+    private WorkDayService service;
     private WorkDay wr;
 
     public WorkDayServiceTest() {
@@ -47,7 +47,7 @@ public class WorkDayServiceTest {
     @BeforeEach
     void setUp() {
         weeklyTarget = Duration.ofHours(37).plusMinutes(30);
-        service = new WorkRegistrationService(workRegistrationRepository, workMonthTemplate, dailyPolicyRepo,
+        service = new WorkDayService(workDayRepository, workMonthTemplate, dailyPolicyRepo,
                 weeklyTarget);
         wr = WorkDay.of(
                 LocalDate.of(2026, 3, 3),
@@ -63,29 +63,29 @@ public class WorkDayServiceTest {
     @DisplayName("The work day should be registered successfully")
     void shouldRegisterWorkDaySuccessfully() {
         DailyPolicy dp = new DailyPolicy(
-                wr.getWorkingDay().getDayOfWeek(),
+                wr.getDay().getDayOfWeek(),
                 wr.getStartTime(),
                 wr.getFinishingTime()
         );
 
-        when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(false);
-        when(dailyPolicyRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.of(dp));
+        when(workDayRepository.exists(any())).thenReturn(false);
+        when(dailyPolicyRepo.getPolicyFor(wr.getDay().getDayOfWeek())).thenReturn(Optional.of(dp));
         service.registerWorkDay(wr);
-        verify(workRegistrationRepository).save(any(WorkDay.class));
+        verify(workDayRepository).save(any(WorkDay.class));
     }
 
     @Test
     @DisplayName("Already registered working day error")
     void shouldThrowExceptionWhenDayIsAlreadyRegistered() {
-        when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(true);
-        assertThrows(AlreadyRegisteredDayException.class, () -> service.registerWorkDay(wr));
+        when(workDayRepository.exists(any())).thenReturn(true);
+        assertThrows(AlreadyWorkDayException.class, () -> service.registerWorkDay(wr));
     }
 
     @Test
     @DisplayName("Policy not found for that working day")
     void shouldThrowExceptionWhenPolicyNotFound() {
-        when(workRegistrationRepository.existsByWorkingDay(any())).thenReturn(false);
-        when(dailyPolicyRepo.getPolicyFor(wr.getWorkingDay().getDayOfWeek())).thenReturn(Optional.empty());
+        when(workDayRepository.exists(any())).thenReturn(false);
+        when(dailyPolicyRepo.getPolicyFor(wr.getDay().getDayOfWeek())).thenReturn(Optional.empty());
         assertThrows(PolicyNotFoundException.class, () -> service.registerWorkDay(wr));
     }
 
@@ -108,8 +108,8 @@ public class WorkDayServiceTest {
                         null,
                         Duration.ofHours(7)));
 
-        when(workRegistrationRepository.findByMonth(YearMonth.of(2026,2))).thenReturn(list);
-        List<WorkDay> result = service.findByMonth(YearMonth.of(2026, 2));
+        when(workDayRepository.findByMonth(YearMonth.of(2026,2))).thenReturn(list);
+        List<WorkDay> result = service.findWorkDayByMonth(YearMonth.of(2026, 2));
         assertEquals(2, result.size());
     }
 
@@ -135,7 +135,7 @@ public class WorkDayServiceTest {
         WorkMonthTemplate template = new WorkMonthTemplate(month, 4);
         Duration target = template.monthlyTargetHours(this.weeklyTarget);
 
-        when(workRegistrationRepository.findByMonth(month)).thenReturn(list);
+        when(workDayRepository.findByMonth(month)).thenReturn(list);
         when(workMonthTemplate.getWorkMonthTemplate(month)).thenReturn(Optional.of(template));
 
         Duration balance = service.calculateMonthlyBalance(month);
