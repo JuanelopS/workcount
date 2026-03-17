@@ -11,31 +11,31 @@ import java.util.List;
 import java.util.Optional;
 
 public class WorkDay {
-    private final LocalDate workingDay;
+    private final LocalDate day;
     private final List<Clocking> registrations;
     private Duration validatedHours;
 
-    private WorkDay(LocalDate workingDay, List<Clocking> registrations, Duration validatedHours) {
+    private WorkDay(LocalDate day, List<Clocking> registrations, Duration validatedHours) {
 
         validatedHours = validatedHours != null ? validatedHours : Duration.ZERO;
-        validate(workingDay, validatedHours);
+        validate(day, validatedHours);
 
-        this.workingDay = workingDay;
+        this.day = day;
         this.registrations = new ArrayList<>(registrations != null ? registrations : List.of());
         this.validatedHours = validatedHours;
     }
 
-    public static WorkDay of(LocalDate workingDay, List<Clocking> registrations,
+    public static WorkDay of(LocalDate day, List<Clocking> registrations,
                              Duration validatedHours) {
-        return new WorkDay(workingDay, registrations, validatedHours);
+        return new WorkDay(day, registrations, validatedHours);
     }
 
-    public static WorkDay create(LocalDate workingDay){
-        return new WorkDay(workingDay, List.of(), Duration.ZERO);
+    public static WorkDay create(LocalDate day){
+        return new WorkDay(day, List.of(), Duration.ZERO);
     }
 
-    public LocalDate getWorkingDay() {
-        return workingDay;
+    public LocalDate getDay() {
+        return day;
     }
 
     public List<Clocking> getRegistrations() {
@@ -62,7 +62,8 @@ public class WorkDay {
         return Optional.of(registrations.getLast().time());
     }
 
-    public void validate(LocalDate workingDay, Duration validatedHours) {
+    // TODO: CHANGE THIS LEGACY VALIDATIONS
+    public void validate(LocalDate day, Duration validatedHours) {
         if (!checkValidatedHours(validatedHours)) {
             throw new IllegalArgumentException("Validated hours can't be > 24 hours");
         }
@@ -138,5 +139,12 @@ public class WorkDay {
                 .minus(cutFinishing);
 
         return this;
+    }
+
+    public Optional<ClockingType> getCurrentStatus() {
+        if(this.registrations.isEmpty()){
+            return Optional.empty();
+        }
+        return Optional.of(this.registrations.getLast().type());
     }
 }
