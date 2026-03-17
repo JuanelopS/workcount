@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.application.port.in;
+package dev.jugapi.workcount.application.port.in.workday;
 
 import java.time.LocalDate;
 

@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.application.port.in;
+package dev.jugapi.workcount.application.port.in.workmonth;
 
 import java.time.Duration;
 import java.time.YearMonth;

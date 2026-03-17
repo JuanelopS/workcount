@@ -1,0 +1,8 @@
+package dev.jugapi.workcount.application.port.in.clocking;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public interface DeleteClockingUseCase {
+    void DeleteClockIn(LocalDate date, LocalTime time);
+}

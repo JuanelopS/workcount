@@ -7,7 +7,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
-public interface WorkRegistrationRepository {
+public interface WorkDayRepository {
     WorkDay save(WorkDay workDay);
     void update(WorkDay workDay);
     void delete(LocalDate date);
