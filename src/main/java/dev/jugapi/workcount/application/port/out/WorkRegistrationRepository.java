@@ -11,7 +11,7 @@ public interface WorkRegistrationRepository {
     WorkDay save(WorkDay workDay);
     void update(WorkDay workDay);
     void delete(LocalDate date);
-    Optional<WorkDay> findByWorkingDay(LocalDate date);
+    Optional<WorkDay> findByDate(LocalDate date);
     List<WorkDay> findByMonth(YearMonth month);
     boolean exists(LocalDate date);
 }

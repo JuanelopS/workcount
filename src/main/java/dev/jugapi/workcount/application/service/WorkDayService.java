@@ -40,7 +40,7 @@ public class WorkDayService implements ClockInUseCase, CreateWorkDayUseCase, Del
     public WorkDay clockIn(ClockingType type) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
-        Optional<WorkDay> optWorkDay = workRegistrationRepository.findByWorkingDay(today);
+        Optional<WorkDay> optWorkDay = workRegistrationRepository.findByDate(today);
 
         WorkDay workDay = optWorkDay.orElseGet(() -> WorkDay.create(today));
 
