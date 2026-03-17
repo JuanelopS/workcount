@@ -1,9 +1,7 @@
 package dev.jugapi.workcount.domain.model;
 
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
-import org.springframework.cglib.core.Local;
 
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
