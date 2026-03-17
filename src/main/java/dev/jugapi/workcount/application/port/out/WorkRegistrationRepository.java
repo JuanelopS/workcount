@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WorkRegistrationRepository {
-    WorkDay save(WorkDay registration);
-    void deleteByWorkingDay(LocalDate date);
+    WorkDay save(WorkDay workDay);
+    void update(WorkDay workDay);
+    void delete(LocalDate date);
     Optional<WorkDay> findByWorkingDay(LocalDate date);
     List<WorkDay> findByMonth(YearMonth month);
-    boolean existsByWorkingDay(LocalDate date);
+    boolean exists(LocalDate date);
 }
