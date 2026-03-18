@@ -51,7 +51,11 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
 
     @Override
     @Transactional
-    public void DeleteClockIn(LocalDate date, LocalTime time) {
+    public void deleteClockIn(LocalDate date, LocalTime time) {
+        WorkDay workDay = workDayRepository.findByDate(date)
+                .orElseThrow(() -> new InexistentWorkDayException(date));
+
+        workDay.deleteClocking();
 
     }
 }

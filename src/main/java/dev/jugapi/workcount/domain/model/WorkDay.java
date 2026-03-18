@@ -1,6 +1,7 @@
 package dev.jugapi.workcount.domain.model;
 
 import dev.jugapi.workcount.domain.exception.InexistentClockingException;
+import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
 
 import java.time.Duration;
@@ -77,15 +78,6 @@ public class WorkDay {
     // refactorize to event-based-clocking
 
     public void addClocking(Clocking clocking) {
-        if (clockingList.size() % 2 != 0 && clocking.type() == ClockingType.IN) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
-        if (clockingList.size() % 2 == 0 && clocking.type() == ClockingType.OUT) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
-        if (!clockingList.isEmpty() && clocking.time().isBefore(clockingList.getLast().time())) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
         if (clockingList.isEmpty() && clocking.type() == ClockingType.OUT) {
             throw new InvalidClockingSequenceException(clocking);
         }
@@ -119,8 +111,16 @@ public class WorkDay {
         clockingList.set(originalIndex, newClocking);
     }
 
-    public void removeClocking(Clocking clocking) {
+    public void deleteClocking(LocalTime time) {
+        if(clockingList.isEmpty()){
+            throw new InexistentClockingException(time);
+        }
 
+        boolean removed = clockingList.removeIf(c -> c.time().equals(time));
+
+        if(!removed) {
+            throw new InexistentClockingException(time);
+        }
     }
 
     public Duration calculateTotalHours() {

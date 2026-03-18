@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public interface DeleteClockingUseCase {
-    void DeleteClockIn(LocalDate date, LocalTime time);
+    void deleteClockIn(LocalDate date, LocalTime time);
 }
