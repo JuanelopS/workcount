@@ -9,6 +9,7 @@ import dev.jugapi.workcount.domain.model.Clocking;
 import dev.jugapi.workcount.domain.model.ClockingType;
 import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,6 +26,7 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
     }
 
     @Override
+    @Transactional
     public WorkDay createClocking(ClockingType type) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
@@ -39,6 +41,7 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
     }
 
     @Override
+    @Transactional
     public void updateClocking(LocalDate date, LocalTime originalTime, LocalTime newTime) {
         WorkDay workDay = workDayRepository.findByDate(date)
                 .orElseThrow(() -> new InexistentWorkDayException(date));
@@ -47,6 +50,7 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
     }
 
     @Override
+    @Transactional
     public void DeleteClockIn(LocalDate date, LocalTime time) {
 
     }

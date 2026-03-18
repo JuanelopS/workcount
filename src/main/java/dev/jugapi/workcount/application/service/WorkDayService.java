@@ -38,11 +38,13 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
 
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
+
         workDay = workDay.validateHours(policy);
         return workDayRepository.save(workDay);
     }
 
     @Override
+    @Transactional
     public WorkDay updateWorkDay(WorkDay workDay) {
         if(!workDayRepository.exists(workDay.getDay())) {
             throw new InexistentWorkDayException(workDay.getDay());
@@ -53,7 +55,6 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 
         workDay = workDay.validateHours(policy);
-
         return workDayRepository.save(workDay);
     }
 
