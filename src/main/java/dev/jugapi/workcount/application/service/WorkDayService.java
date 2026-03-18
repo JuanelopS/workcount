@@ -61,11 +61,11 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
     @Override
     @Transactional
     public void deleteWorkDay(LocalDate date) {
-        if (workDayRepository.exists(date)) {
-            workDayRepository.delete(date);
-        } else {
+        if (!workDayRepository.exists(date)) {
             throw new InexistentWorkDayException(date);
         }
+
+        workDayRepository.delete(date);
     }
 
     public List<WorkDay> findWorkDayByMonth(YearMonth month) {
