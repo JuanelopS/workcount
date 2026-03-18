@@ -140,7 +140,7 @@ public class WorkDay {
         return total;
     }
 
-    public WorkDay calculateHoursAccordingToPolicy(DailyPolicy policy) {
+    public WorkDay calculateValidatedHoursAccordingToPolicy(DailyPolicy policy) {
         Optional<LocalTime> optRealStart = this.getStartTime();
         Optional<LocalTime> optRealFinishing = this.getFinishingTime();
 

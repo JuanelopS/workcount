@@ -39,7 +39,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 
-        workDay = workDay.calculateHoursAccordingToPolicy(policy);
+        workDay = workDay.calculateValidatedHoursAccordingToPolicy(policy);
         return workDayRepository.save(workDay);
     }
 
@@ -54,7 +54,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 
-        workDay = workDay.calculateHoursAccordingToPolicy(policy);
+        workDay = workDay.calculateValidatedHoursAccordingToPolicy(policy);
         return workDayRepository.save(workDay);
     }
 
