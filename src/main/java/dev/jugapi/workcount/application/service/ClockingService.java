@@ -40,10 +40,10 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
 
     @Override
     public void updateClocking(LocalDate date, LocalTime originalTime, LocalTime newTime) {
-        WorkDay wd = workDayRepository.findByDate(date)
+        WorkDay workDay = workDayRepository.findByDate(date)
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
-        wd.updateClocking(originalTime, newTime);
+        workDay.updateClocking(originalTime, newTime);
     }
 
     @Override

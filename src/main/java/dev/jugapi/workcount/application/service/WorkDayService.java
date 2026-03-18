@@ -29,32 +29,32 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         this.dailyPolicyRepository = dailyPolicyRepository;
     }
 
-    public WorkDay createWorkDay(WorkDay wd) {
-        if (workDayRepository.exists(wd.getDay())) {
-            throw new AlreadyWorkDayException(wd.getDay());
+    public WorkDay createWorkDay(WorkDay workDay) {
+        if (workDayRepository.exists(workDay.getDay())) {
+            throw new AlreadyWorkDayException(workDay.getDay());
         }
 
-        DayOfWeek day = wd.getDay().getDayOfWeek();
+        DayOfWeek day = workDay.getDay().getDayOfWeek();
 
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
-        wd = wd.validateHours(policy);
-        return workDayRepository.save(wd);
+        workDay = workDay.validateHours(policy);
+        return workDayRepository.save(workDay);
     }
 
     @Override
-    public WorkDay updateWorkDay(WorkDay wd) {
-        if(!workDayRepository.exists(wd.getDay())) {
-            throw new InexistentWorkDayException(wd.getDay());
+    public WorkDay updateWorkDay(WorkDay workDay) {
+        if(!workDayRepository.exists(workDay.getDay())) {
+            throw new InexistentWorkDayException(workDay.getDay());
         }
 
-        DayOfWeek day = wd.getDay().getDayOfWeek();
+        DayOfWeek day = workDay.getDay().getDayOfWeek();
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 
-        wd = wd.validateHours(policy);
+        workDay = workDay.validateHours(policy);
 
-        return workDayRepository.save(wd);
+        return workDayRepository.save(workDay);
     }
 
     @Override
