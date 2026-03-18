@@ -64,7 +64,6 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         if (!workDayRepository.exists(date)) {
             throw new InexistentWorkDayException(date);
         }
-
         workDayRepository.delete(date);
     }
 

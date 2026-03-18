@@ -37,11 +37,6 @@ public class WorkRegistrationPersistenceAdapter implements WorkDayRepository {
     }
 
     @Override
-    public void update(WorkDay workDay) {
-
-    }
-
-    @Override
     public void delete(LocalDate workingDay) {
         repository.findByWorkingDay(workingDay).ifPresentOrElse(
                 repository::delete,

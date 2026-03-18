@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface WorkDayRepository {
     WorkDay save(WorkDay workDay);
-    void update(WorkDay workDay);
     void delete(LocalDate date);
     boolean exists(LocalDate date);
     Optional<WorkDay> findByDate(LocalDate date);
