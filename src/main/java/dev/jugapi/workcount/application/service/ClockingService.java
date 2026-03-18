@@ -55,7 +55,6 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
         WorkDay workDay = workDayRepository.findByDate(date)
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
-        workDay.deleteClocking();
-
+        workDay.deleteClocking(time);
     }
 }
