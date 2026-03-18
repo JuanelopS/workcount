@@ -1,7 +1,6 @@
 package dev.jugapi.workcount.domain.model;
 
 import dev.jugapi.workcount.domain.exception.InexistentClockingException;
-import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
 
 import java.time.Duration;
@@ -141,7 +140,7 @@ public class WorkDay {
         return total;
     }
 
-    public WorkDay validateHours(DailyPolicy policy) {
+    public WorkDay calculateHoursAccordingToPolicy(DailyPolicy policy) {
         Optional<LocalTime> optRealStart = this.getStartTime();
         Optional<LocalTime> optRealFinishing = this.getFinishingTime();
 
