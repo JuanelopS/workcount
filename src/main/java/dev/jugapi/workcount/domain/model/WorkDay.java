@@ -112,8 +112,7 @@ public class WorkDay {
 
         Clocking newClocking = new Clocking(newTime, registrations.get(originalIndex).type());
 
-        if (validateBeforePreviousClocking(originalIndex, newTime) ||
-                validateAfterNextClocking(originalIndex, newTime)) {
+        if (validateUpdateClocking(originalIndex, newTime)) {
             throw new InvalidClockingSequenceException(newClocking);
         }
 
@@ -179,13 +178,13 @@ public class WorkDay {
         return Optional.of(this.registrations.getLast().type());
     }
 
-    private boolean validateBeforePreviousClocking(int index, LocalTime time){
-        return index > 0 && time.isBefore(registrations.get(index - 1).time());
+    private boolean validateUpdateClocking(int index, LocalTime time) {
+        boolean validateBefore = index > 0 && time.isBefore(registrations.get(index - 1).time());
+        boolean validateAfter = index < (registrations.size() - 1) &&
+                time.isAfter(registrations.get(index + 1).time());
+
+        return validateBefore || validateAfter;
     }
 
-    private boolean validateAfterNextClocking(int index, LocalTime time){
-        return index < (registrations.size() - 1) &&
-                time.isAfter(registrations.get(index + 1).time());
-    }
 
 }
