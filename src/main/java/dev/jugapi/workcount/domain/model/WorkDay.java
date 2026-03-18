@@ -13,22 +13,22 @@ import java.util.Optional;
 
 public class WorkDay {
     private final LocalDate day;
-    private final List<Clocking> registrations;
+    private final List<Clocking> clockingList;
     private Duration validatedHours;
 
-    private WorkDay(LocalDate day, List<Clocking> registrations, Duration validatedHours) {
+    private WorkDay(LocalDate day, List<Clocking> clockingList, Duration validatedHours) {
 
         validatedHours = validatedHours != null ? validatedHours : Duration.ZERO;
         validate(day, validatedHours);
 
         this.day = day;
-        this.registrations = new ArrayList<>(registrations != null ? registrations : List.of());
+        this.clockingList = new ArrayList<>(clockingList != null ? clockingList : List.of());
         this.validatedHours = validatedHours;
     }
 
-    public static WorkDay of(LocalDate day, List<Clocking> registrations,
+    public static WorkDay of(LocalDate day, List<Clocking> clockingList,
                              Duration validatedHours) {
-        return new WorkDay(day, registrations, validatedHours);
+        return new WorkDay(day, clockingList, validatedHours);
     }
 
     public static WorkDay create(LocalDate day) {
@@ -40,7 +40,7 @@ public class WorkDay {
     }
 
     public List<Clocking> getRegistrations() {
-        return registrations;
+        return clockingList;
     }
 
     public Duration getValidatedHours() {
@@ -48,19 +48,19 @@ public class WorkDay {
     }
 
     public Optional<LocalTime> getStartTime() {
-        return registrations.isEmpty() ? Optional.empty() :
-                Optional.of(registrations.getFirst().time());
+        return clockingList.isEmpty() ? Optional.empty() :
+                Optional.of(clockingList.getFirst().time());
     }
 
     // returns the last Clocking.OUT to validate only IN - OUT duration blocks
     public Optional<LocalTime> getFinishingTime() {
-        if (registrations.isEmpty() || registrations.getLast().type() != ClockingType.OUT) {
-            return registrations.stream().filter(c -> c.type() == ClockingType.OUT)
+        if (clockingList.isEmpty() || clockingList.getLast().type() != ClockingType.OUT) {
+            return clockingList.stream().filter(c -> c.type() == ClockingType.OUT)
                     .max(Comparator.comparing(Clocking::time))
                     .map(Clocking::time);
         }
 
-        return Optional.of(registrations.getLast().time());
+        return Optional.of(clockingList.getLast().time());
     }
 
     // TODO: CHANGE THIS LEGACY VALIDATIONS
@@ -77,29 +77,29 @@ public class WorkDay {
     // refactorize to event-based-clocking
 
     public void addClocking(Clocking clocking) {
-        if (registrations.size() % 2 != 0 && clocking.type() == ClockingType.IN) {
+        if (clockingList.size() % 2 != 0 && clocking.type() == ClockingType.IN) {
             throw new InvalidClockingSequenceException(clocking);
         }
-        if (registrations.size() % 2 == 0 && clocking.type() == ClockingType.OUT) {
+        if (clockingList.size() % 2 == 0 && clocking.type() == ClockingType.OUT) {
             throw new InvalidClockingSequenceException(clocking);
         }
-        if (!registrations.isEmpty() && clocking.time().isBefore(registrations.getLast().time())) {
+        if (!clockingList.isEmpty() && clocking.time().isBefore(clockingList.getLast().time())) {
             throw new InvalidClockingSequenceException(clocking);
         }
-        if (registrations.isEmpty() && clocking.type() == ClockingType.OUT) {
+        if (clockingList.isEmpty() && clocking.type() == ClockingType.OUT) {
             throw new InvalidClockingSequenceException(clocking);
         }
 
-        registrations.add(clocking);
-        registrations.sort(Comparator.comparing(Clocking::time));
+        clockingList.add(clocking);
+        clockingList.sort(Comparator.comparing(Clocking::time));
     }
 
     public void updateClocking(LocalTime originalTime, LocalTime newTime) {
-        if (registrations.isEmpty()) {
+        if (clockingList.isEmpty()) {
             throw new InexistentClockingException(originalTime);
         }
 
-        Optional<Clocking> opt = registrations.stream()
+        Optional<Clocking> opt = clockingList.stream()
                 .filter(c -> c.time().equals(originalTime))
                 .findFirst();
 
@@ -108,15 +108,15 @@ public class WorkDay {
         }
 
         Clocking originalClocking = opt.get();
-        int originalIndex = registrations.indexOf(originalClocking);
+        int originalIndex = clockingList.indexOf(originalClocking);
 
-        Clocking newClocking = new Clocking(newTime, registrations.get(originalIndex).type());
+        Clocking newClocking = new Clocking(newTime, clockingList.get(originalIndex).type());
 
         if (validateUpdateClocking(originalIndex, newTime)) {
             throw new InvalidClockingSequenceException(newClocking);
         }
 
-        registrations.set(originalIndex, newClocking);
+        clockingList.set(originalIndex, newClocking);
     }
 
     public void removeClocking(Clocking clocking) {
@@ -124,13 +124,13 @@ public class WorkDay {
     }
 
     public Duration calculateTotalHours() {
-        if (this.registrations.isEmpty())
+        if (this.clockingList.isEmpty())
             return Duration.ZERO;
 
         Duration total = Duration.ZERO;
         LocalTime start = null;
 
-        for (Clocking clocking : this.registrations) {
+        for (Clocking clocking : this.clockingList) {
             if (clocking.type() == ClockingType.IN) {
                 start = clocking.time();
             } else if (clocking.type() == ClockingType.OUT && start != null) {
@@ -172,16 +172,16 @@ public class WorkDay {
     }
 
     public Optional<ClockingType> getCurrentStatus() {
-        if (this.registrations.isEmpty()) {
+        if (this.clockingList.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(this.registrations.getLast().type());
+        return Optional.of(this.clockingList.getLast().type());
     }
 
     private boolean validateUpdateClocking(int index, LocalTime time) {
-        boolean validateBefore = index > 0 && time.isBefore(registrations.get(index - 1).time());
-        boolean validateAfter = index < (registrations.size() - 1) &&
-                time.isAfter(registrations.get(index + 1).time());
+        boolean validateBefore = index > 0 && time.isBefore(clockingList.get(index - 1).time());
+        boolean validateAfter = index < (clockingList.size() - 1) &&
+                time.isAfter(clockingList.get(index + 1).time());
 
         return validateBefore || validateAfter;
     }
