@@ -1,8 +1,8 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
+import dev.jugapi.workcount.application.port.out.WorkDayRepository;
 import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.model.WorkDay;
-import dev.jugapi.workcount.application.port.out.WorkDayRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -11,28 +11,28 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class WorkRegistrationPersistenceAdapter implements WorkDayRepository {
+public class WorkDayPersistenceAdapter implements WorkDayRepository {
     private final SpringDataWorkRegistrationRepository repository;
-    private final WorkRegistrationMapper mapper;
+    private final WorkDayMapper mapper;
 
-    public WorkRegistrationPersistenceAdapter(SpringDataWorkRegistrationRepository repository,
-                                              WorkRegistrationMapper mapper) {
+    public WorkDayPersistenceAdapter(SpringDataWorkRegistrationRepository repository,
+                                     WorkDayMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
     public WorkDay save(WorkDay workDay) {
-        WorkRegistrationEntity entity = mapper.toEntity(workDay);
+        WorkDayEntity entity = mapper.toEntity(workDay);
 
         // upsert logic (id != null ? update : insert)
-        Optional<WorkRegistrationEntity> existing = repository
+        Optional<WorkDayEntity> existing = repository
                 .findByWorkingDay(workDay.getDate());
 
         existing.ifPresent(workRegistrationEntity
                 -> entity.setId(workRegistrationEntity.getId()));
 
-        WorkRegistrationEntity result = repository.save(entity);
+        WorkDayEntity result = repository.save(entity);
         return mapper.toDomain(result);
     }
 
@@ -56,7 +56,7 @@ public class WorkRegistrationPersistenceAdapter implements WorkDayRepository {
     public List<WorkDay> findByMonth(YearMonth month) {
         LocalDate firstDay = month.atDay(1);
         LocalDate lastDay = month.atEndOfMonth();
-        List<WorkRegistrationEntity> list = repository.findByWorkingDayBetween(firstDay, lastDay);
+        List<WorkDayEntity> list = repository.findByWorkingDayBetween(firstDay, lastDay);
         return list.stream()
                 .map(mapper::toDomain)
                 .toList();

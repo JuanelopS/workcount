@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SpringDataWorkRegistrationRepository extends
-        JpaRepository<WorkRegistrationEntity, Long> {
+        JpaRepository<WorkDayEntity, Long> {
     boolean existsByWorkingDay(LocalDate date);
-    Optional<WorkRegistrationEntity> findByWorkingDay(LocalDate workingDay);
-    List<WorkRegistrationEntity> findByWorkingDayBetween(LocalDate start, LocalDate end);
+
+    Optional<WorkDayEntity> findByWorkingDay(LocalDate workingDay);
+
+    List<WorkDayEntity> findByWorkingDayBetween(LocalDate start, LocalDate end);
 }

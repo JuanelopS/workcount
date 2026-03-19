@@ -58,18 +58,19 @@ public class WorkDay {
 
     public Optional<LocalTime> getStartTime() {
         return clockingList.isEmpty() ? Optional.empty() :
-                Optional.of(clockingList.getFirst().time());
+                Optional.of(clockingList.get(0).time());
     }
 
     // returns the last Clocking.OUT to validate only IN - OUT duration blocks
     public Optional<LocalTime> getFinishingTime() {
-        if (clockingList.isEmpty() || clockingList.getLast().type() != ClockingType.OUT) {
+        if (clockingList.isEmpty() ||
+                clockingList.get(clockingList.size() - 1).type() != ClockingType.OUT) {
             return clockingList.stream().filter(c -> c.type() == ClockingType.OUT)
                     .max(Comparator.comparing(Clocking::time))
                     .map(Clocking::time);
         }
 
-        return Optional.of(clockingList.getLast().time());
+        return Optional.of(clockingList.get(clockingList.size() - 1).time());
     }
 
     public void addClocking(Clocking clocking) {
@@ -170,7 +171,7 @@ public class WorkDay {
         if (this.clockingList.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(this.clockingList.getLast().type());
+        return Optional.of(this.clockingList.get(clockingList.size() - 1).type());
     }
 
     private boolean validateUpdateClocking(int index, LocalTime time) {
