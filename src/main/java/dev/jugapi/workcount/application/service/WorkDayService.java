@@ -1,17 +1,20 @@
 package dev.jugapi.workcount.application.service;
 
 import dev.jugapi.workcount.application.port.in.workday.*;
+import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
+import dev.jugapi.workcount.application.port.out.WorkDayRepository;
 import dev.jugapi.workcount.domain.exception.AlreadyWorkDayException;
 import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
-import dev.jugapi.workcount.domain.model.*;
-import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
-import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
-import dev.jugapi.workcount.application.port.out.WorkDayRepository;
+import dev.jugapi.workcount.domain.model.ClockingType;
+import dev.jugapi.workcount.domain.model.DailyPolicy;
+import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +26,6 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
     private final DailyPolicyRepository dailyPolicyRepository;
 
     public WorkDayService(WorkDayRepository workDayRepository,
-                          WorkMonthTemplateRepository workMonthTemplateRepository,
                           DailyPolicyRepository dailyPolicyRepository) {
         this.workDayRepository = workDayRepository;
         this.dailyPolicyRepository = dailyPolicyRepository;
@@ -35,7 +37,6 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         }
 
         DayOfWeek day = workDay.getDate().getDayOfWeek();
-
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 
@@ -46,7 +47,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
     @Override
     @Transactional
     public WorkDay updateWorkDay(WorkDay workDay) {
-        if(!workDayRepository.exists(workDay.getDate())) {
+        if (!workDayRepository.exists(workDay.getDate())) {
             throw new InexistentWorkDayException(workDay.getDate());
         }
 
@@ -64,6 +65,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         if (!workDayRepository.exists(date)) {
             throw new InexistentWorkDayException(date);
         }
+
         workDayRepository.delete(date);
     }
 
@@ -75,7 +77,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
     public Optional<ClockingType> getCurrentStatus() {
         LocalDate today = LocalDate.now();
 
-        if(!workDayRepository.exists(today)){
+        if (!workDayRepository.exists(today)) {
             throw new InexistentWorkDayException(today);
         }
 

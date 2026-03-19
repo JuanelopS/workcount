@@ -111,13 +111,13 @@ public class WorkDay {
     }
 
     public void deleteClocking(LocalTime time) {
-        if(clockingList.isEmpty()){
+        if (clockingList.isEmpty()) {
             throw new InexistentClockingException(time);
         }
 
         boolean removed = clockingList.removeIf(c -> c.time().equals(time));
 
-        if(!removed) {
+        if (!removed) {
             throw new InexistentClockingException(time);
         }
     }
