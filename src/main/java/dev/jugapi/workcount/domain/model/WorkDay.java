@@ -17,13 +17,22 @@ public class WorkDay {
     private Duration validatedHours;
 
     private WorkDay(LocalDate date, List<Clocking> clockingList, Duration validatedHours) {
-
         validatedHours = validatedHours != null ? validatedHours : Duration.ZERO;
         validate(date, validatedHours);
 
         this.date = date;
         this.clockingList = new ArrayList<>(clockingList != null ? clockingList : List.of());
         this.validatedHours = validatedHours;
+    }
+
+    public void validate(LocalDate date, Duration validatedHours) {
+        if (!checkMaxValidatedHours(validatedHours)) {
+            throw new IllegalArgumentException("Las horas validadas no pueden superar las 24 horas");
+        }
+    }
+
+    private boolean checkMaxValidatedHours(Duration validatedHours) {
+        return validatedHours.toHours() < 24;
     }
 
     public static WorkDay of(LocalDate date, List<Clocking> clockingList,
@@ -62,19 +71,6 @@ public class WorkDay {
 
         return Optional.of(clockingList.getLast().time());
     }
-
-    // TODO: CHANGE THIS LEGACY VALIDATIONS
-    public void validate(LocalDate date, Duration validatedHours) {
-        if (!checkValidatedHours(validatedHours)) {
-            throw new IllegalArgumentException("Validated hours can't be > 24 hours");
-        }
-    }
-
-    private boolean checkValidatedHours(Duration validatedHours) {
-        return validatedHours.toHours() < 24;
-    }
-
-    // refactorize to event-based-clocking
 
     public void addClocking(Clocking clocking) {
         if (clockingList.isEmpty() && clocking.type() == ClockingType.OUT) {
