@@ -12,34 +12,34 @@ import java.util.List;
 import java.util.Optional;
 
 public class WorkDay {
-    private final LocalDate day;
+    private final LocalDate date;
     private final List<Clocking> clockingList;
     private Duration validatedHours;
 
-    private WorkDay(LocalDate day, List<Clocking> clockingList, Duration validatedHours) {
+    private WorkDay(LocalDate date, List<Clocking> clockingList, Duration validatedHours) {
 
         validatedHours = validatedHours != null ? validatedHours : Duration.ZERO;
-        validate(day, validatedHours);
+        validate(date, validatedHours);
 
-        this.day = day;
+        this.date = date;
         this.clockingList = new ArrayList<>(clockingList != null ? clockingList : List.of());
         this.validatedHours = validatedHours;
     }
 
-    public static WorkDay of(LocalDate day, List<Clocking> clockingList,
+    public static WorkDay of(LocalDate date, List<Clocking> clockingList,
                              Duration validatedHours) {
-        return new WorkDay(day, clockingList, validatedHours);
+        return new WorkDay(date, clockingList, validatedHours);
     }
 
     public static WorkDay create(LocalDate day) {
         return new WorkDay(day, List.of(), Duration.ZERO);
     }
 
-    public LocalDate getDay() {
-        return day;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public List<Clocking> getRegistrations() {
+    public List<Clocking> getClockingList() {
         return clockingList;
     }
 
@@ -64,7 +64,7 @@ public class WorkDay {
     }
 
     // TODO: CHANGE THIS LEGACY VALIDATIONS
-    public void validate(LocalDate day, Duration validatedHours) {
+    public void validate(LocalDate date, Duration validatedHours) {
         if (!checkValidatedHours(validatedHours)) {
             throw new IllegalArgumentException("Validated hours can't be > 24 hours");
         }
@@ -184,6 +184,4 @@ public class WorkDay {
 
         return validateBefore || validateAfter;
     }
-
-
 }

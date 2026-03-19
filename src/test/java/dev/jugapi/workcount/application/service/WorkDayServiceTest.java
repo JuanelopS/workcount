@@ -63,13 +63,13 @@ public class WorkDayServiceTest {
     @DisplayName("The work day should be registered successfully")
     void shouldRegisterWorkDaySuccessfully() {
         DailyPolicy dp = new DailyPolicy(
-                wr.getDay().getDayOfWeek(),
+                wr.getDate().getDayOfWeek(),
                 wr.getStartTime(),
                 wr.getFinishingTime()
         );
 
         when(workDayRepository.exists(any())).thenReturn(false);
-        when(dailyPolicyRepo.getPolicyFor(wr.getDay().getDayOfWeek())).thenReturn(Optional.of(dp));
+        when(dailyPolicyRepo.getPolicyFor(wr.getDate().getDayOfWeek())).thenReturn(Optional.of(dp));
         service.registerWorkDay(wr);
         verify(workDayRepository).save(any(WorkDay.class));
     }
@@ -85,7 +85,7 @@ public class WorkDayServiceTest {
     @DisplayName("Policy not found for that working day")
     void shouldThrowExceptionWhenPolicyNotFound() {
         when(workDayRepository.exists(any())).thenReturn(false);
-        when(dailyPolicyRepo.getPolicyFor(wr.getDay().getDayOfWeek())).thenReturn(Optional.empty());
+        when(dailyPolicyRepo.getPolicyFor(wr.getDate().getDayOfWeek())).thenReturn(Optional.empty());
         assertThrows(PolicyNotFoundException.class, () -> service.registerWorkDay(wr));
     }
 

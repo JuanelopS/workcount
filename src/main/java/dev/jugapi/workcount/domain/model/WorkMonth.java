@@ -13,7 +13,7 @@ public record WorkMonth(
         registrations = (registrations != null) ? List.copyOf(registrations) : List.of();
 
         boolean checkList = registrations.stream()
-                .anyMatch(wr -> !YearMonth.from(wr.getDay()).equals(month));
+                .anyMatch(wr -> !YearMonth.from(wr.getDate()).equals(month));
         if (checkList) {
             throw new IllegalArgumentException("All registration must belong to the month " + month);
         }

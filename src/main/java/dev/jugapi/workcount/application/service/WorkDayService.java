@@ -30,11 +30,11 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
     }
 
     public WorkDay createWorkDay(WorkDay workDay) {
-        if (workDayRepository.exists(workDay.getDay())) {
-            throw new AlreadyWorkDayException(workDay.getDay());
+        if (workDayRepository.exists(workDay.getDate())) {
+            throw new AlreadyWorkDayException(workDay.getDate());
         }
 
-        DayOfWeek day = workDay.getDay().getDayOfWeek();
+        DayOfWeek day = workDay.getDate().getDayOfWeek();
 
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
@@ -46,11 +46,11 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
     @Override
     @Transactional
     public WorkDay updateWorkDay(WorkDay workDay) {
-        if(!workDayRepository.exists(workDay.getDay())) {
-            throw new InexistentWorkDayException(workDay.getDay());
+        if(!workDayRepository.exists(workDay.getDate())) {
+            throw new InexistentWorkDayException(workDay.getDate());
         }
 
-        DayOfWeek day = workDay.getDay().getDayOfWeek();
+        DayOfWeek day = workDay.getDate().getDayOfWeek();
         DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
                 .orElseThrow(() -> new PolicyNotFoundException(day));
 

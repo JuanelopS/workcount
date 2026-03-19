@@ -9,7 +9,7 @@ public class WorkRegistrationMapper {
     public WorkRegistrationEntity toEntity(WorkDay domain) {
         WorkRegistrationEntity entity = new WorkRegistrationEntity();
         entity.setId(null);
-        entity.setWorkingDay(domain.getDay());
+        entity.setWorkingDay(domain.getDate());
         entity.setStartTime(domain.getStartTime());
         entity.setFinishingTime(domain.getFinishingTime());
         entity.setBreakDuration(domain.getBreakDuration());

@@ -27,7 +27,7 @@ public class WorkRegistrationPersistenceAdapter implements WorkDayRepository {
 
         // upsert logic (id != null ? update : insert)
         Optional<WorkRegistrationEntity> existing = repository
-                .findByWorkingDay(workDay.getDay());
+                .findByWorkingDay(workDay.getDate());
 
         existing.ifPresent(workRegistrationEntity
                 -> entity.setId(workRegistrationEntity.getId()));
