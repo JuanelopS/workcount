@@ -48,9 +48,7 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
         clocking = new Clocking(now, type);
 
         workDay.addClocking(clocking);
-
-        workDay = validateAfterChangeClocking(workDay, today.getDayOfWeek());
-
+        workDay = calculateValidatedHoursAfterChangeClocking(workDay, today.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
@@ -61,9 +59,7 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
         workDay.updateClocking(originalTime, newTime);
-
-        workDay = validateAfterChangeClocking(workDay, date.getDayOfWeek());
-
+        workDay = calculateValidatedHoursAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
@@ -74,13 +70,11 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
         workDay.deleteClocking(time);
-
-        workDay = validateAfterChangeClocking(workDay, date.getDayOfWeek());
-
+        workDay = calculateValidatedHoursAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
-    private WorkDay validateAfterChangeClocking(WorkDay workDay, DayOfWeek day) {
+    private WorkDay calculateValidatedHoursAfterChangeClocking(WorkDay workDay, DayOfWeek day) {
         Optional<DailyPolicy> policy = dailyPolicyRepository.getPolicyFor(day);
 
         if (policy.isEmpty()) {

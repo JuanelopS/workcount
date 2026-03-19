@@ -36,11 +36,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
             throw new AlreadyWorkDayException(workDay.getDate());
         }
 
-        DayOfWeek day = workDay.getDate().getDayOfWeek();
-        DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
-                .orElseThrow(() -> new PolicyNotFoundException(day));
-
-        workDay = workDay.calculateValidatedHoursAccordingToPolicy(policy);
+        workDay = calculateValidatedHours(workDay);
         return workDayRepository.save(workDay);
     }
 
@@ -51,11 +47,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
             throw new InexistentWorkDayException(workDay.getDate());
         }
 
-        DayOfWeek day = workDay.getDate().getDayOfWeek();
-        DailyPolicy policy = dailyPolicyRepository.getPolicyFor(day)
-                .orElseThrow(() -> new PolicyNotFoundException(day));
-
-        workDay = workDay.calculateValidatedHoursAccordingToPolicy(policy);
+        workDay = calculateValidatedHours(workDay);
         return workDayRepository.save(workDay);
     }
 
@@ -82,5 +74,16 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         }
 
         return workDayRepository.findByDate(today).flatMap(WorkDay::getCurrentStatus);
+    }
+
+    private WorkDay calculateValidatedHours(WorkDay workDay) {
+        DayOfWeek day = workDay.getDate().getDayOfWeek();
+        Optional<DailyPolicy> policy = dailyPolicyRepository.getPolicyFor(day);
+
+        if (policy.isEmpty()) {
+            throw new PolicyNotFoundException(day);
+        }
+
+        return workDay.calculateValidatedHoursAccordingToPolicy(policy.get());
     }
 }
