@@ -1,5 +1,6 @@
 package dev.jugapi.workcount.application.service;
 
+import dev.jugapi.workcount.application.port.in.clocking.ClockInUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.CreateClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.DeleteClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.UpdateClockingUseCase;
@@ -20,8 +21,8 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 @Service
-public class ClockingService implements CreateClockingUseCase, UpdateClockingUseCase,
-        DeleteClockingUseCase {
+public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
+        UpdateClockingUseCase, DeleteClockingUseCase {
 
     private final WorkDayRepository workDayRepository;
     private final DailyPolicyRepository dailyPolicyRepository;
@@ -34,21 +35,28 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
 
     @Override
     @Transactional
-    public WorkDay createClocking(ClockingType type) {
+    public WorkDay clockIn() {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
         Optional<WorkDay> optWorkDay = workDayRepository.findByDate(today);
 
         WorkDay workDay = optWorkDay.orElseGet(() -> WorkDay.create(today));
+        ClockingType clockingType = determineClockingType(workDay);
 
-        Clocking clocking;
-        if (workDay.getClockingList().isEmpty()) {
-            clocking = new Clocking(now, ClockingType.IN);
-        }
-        clocking = new Clocking(now, type);
-
-        workDay.addClocking(clocking);
+        workDay.addClocking(new Clocking(now, clockingType));
         workDay = calculateValidatedHoursAfterChangeClocking(workDay, today.getDayOfWeek());
+        return workDayRepository.save(workDay);
+    }
+
+    @Override
+    @Transactional
+    public WorkDay createClocking(LocalDate date, LocalTime time, ClockingType clockingType) {
+        Optional<WorkDay> optWorkDay = workDayRepository.findByDate(date);
+
+        WorkDay workDay = optWorkDay.orElseGet(() -> WorkDay.create(date));
+
+        workDay.addClocking(new Clocking(time, clockingType));
+        workDay = calculateValidatedHoursAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
@@ -82,5 +90,13 @@ public class ClockingService implements CreateClockingUseCase, UpdateClockingUse
         }
 
         return workDay.calculateValidatedHoursAccordingToPolicy(policy.get());
+    }
+
+    private ClockingType determineClockingType(WorkDay workDay) {
+        Optional<ClockingType> optType = workDay.getCurrentStatus();
+
+        return optType.filter(clockingType -> clockingType.equals(ClockingType.IN))
+                .map(clockingType -> ClockingType.OUT)
+                .orElse(ClockingType.IN);
     }
 }
