@@ -52,7 +52,7 @@ public class WorkDay {
         return clockingList;
     }
 
-    public Duration getValidatedHours() {
+    public Duration getNetTimeWorked() {
         return netTimeWorked;
     }
 
@@ -74,19 +74,13 @@ public class WorkDay {
     }
 
     public void addClocking(Clocking clocking) {
-        if (clockingList.isEmpty() && clocking.type() == ClockingType.OUT) {
-            throw new InvalidClockingSequenceException(clocking);
-        }
+        List<Clocking> tempList = new ArrayList<>(clockingList);
 
-        if (!clockingList.isEmpty()) {
-            int last = clockingList.size() - 1;
-            if (clockingList.get(last).type() == clocking.type()) {
-                throw new InvalidClockingSequenceException(clocking);
-            }
-        }
-
-        clockingList.add(clocking);
-        clockingList.sort(Comparator.comparing(Clocking::time));
+        tempList.add(clocking);
+        tempList.sort(Comparator.comparing(Clocking::time));
+        validateSequence(tempList);
+        clockingList.clear();
+        clockingList.addAll(tempList);
     }
 
     public void updateClocking(LocalTime originalTime, LocalTime newTime) {
@@ -94,24 +88,21 @@ public class WorkDay {
             throw new InexistentClockingException(originalTime);
         }
 
-        Optional<Clocking> opt = clockingList.stream()
+        List<Clocking> tempList = new ArrayList<>(clockingList);
+
+        Clocking clockingToUpdate = tempList.stream()
                 .filter(c -> c.time().equals(originalTime))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new InexistentClockingException(originalTime));
 
-        if (opt.isEmpty()) {
-            throw new InexistentClockingException(originalTime);
-        }
+        int indexToUpdate = tempList.indexOf(clockingToUpdate);
+        ClockingType type = tempList.get(indexToUpdate).type();
 
-        Clocking originalClocking = opt.get();
-        int originalIndex = clockingList.indexOf(originalClocking);
-
-        Clocking newClocking = new Clocking(newTime, clockingList.get(originalIndex).type());
-
-        if (validateUpdatedClocking(originalIndex, newTime)) {
-            throw new InvalidClockingSequenceException(newClocking);
-        }
-
-        clockingList.set(originalIndex, newClocking);
+        tempList.set(indexToUpdate, new Clocking(newTime, type));
+        tempList.sort(Comparator.comparing(Clocking::time));
+        validateSequence(tempList);
+        clockingList.clear();
+        clockingList.addAll(tempList);
     }
 
     public void deleteClocking(LocalTime time) {
@@ -144,7 +135,7 @@ public class WorkDay {
         return total;
     }
 
-    public WorkDay calculateNetHoursAccordingToPolicy(DailyPolicy policy) {
+    public WorkDay calculateNetTimeWorked(DailyPolicy policy) {
         Optional<LocalTime> optRealStart = this.getStartTime();
         Optional<LocalTime> optRealFinishing = this.getFinishingTime();
 
@@ -181,11 +172,21 @@ public class WorkDay {
         return Optional.of(this.clockingList.get(clockingList.size() - 1).type());
     }
 
-    private boolean validateUpdatedClocking(int index, LocalTime time) {
-        boolean validateBefore = index > 0 && time.isBefore(clockingList.get(index - 1).time());
-        boolean validateAfter = index < (clockingList.size() - 1) &&
-                time.isAfter(clockingList.get(index + 1).time());
+    private void validateSequence(List<Clocking> list) {
+        if (list.isEmpty())
+            return;
 
-        return validateBefore || validateAfter;
+        if (list.get(0).type() == ClockingType.OUT) {
+            throw new InvalidClockingSequenceException(list.get(0));
+        }
+
+        for (int i = 0; i < list.size() - 1; i++) {
+            Clocking current = list.get(i);
+            Clocking next = list.get(i + 1);
+
+            if (current.type() == next.type()) {
+                throw new InvalidClockingSequenceException(next);
+            }
+        }
     }
 }
