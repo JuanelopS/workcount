@@ -44,7 +44,7 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
         ClockingType clockingType = determineClockingType(workDay);
 
         workDay.addClocking(new Clocking(now, clockingType));
-        workDay = calculateValidatedHoursAfterChangeClocking(workDay, today.getDayOfWeek());
+        workDay = calculateNetTimeWorkedAfterChangeClocking(workDay, today.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
@@ -56,7 +56,7 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
         WorkDay workDay = optWorkDay.orElseGet(() -> WorkDay.create(date));
 
         workDay.addClocking(new Clocking(time, clockingType));
-        workDay = calculateValidatedHoursAfterChangeClocking(workDay, date.getDayOfWeek());
+        workDay = calculateNetTimeWorkedAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
@@ -67,7 +67,7 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
         workDay.updateClocking(originalTime, newTime);
-        workDay = calculateValidatedHoursAfterChangeClocking(workDay, date.getDayOfWeek());
+        workDay = calculateNetTimeWorkedAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
@@ -78,18 +78,18 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
         workDay.deleteClocking(time);
-        workDay = calculateValidatedHoursAfterChangeClocking(workDay, date.getDayOfWeek());
+        workDay = calculateNetTimeWorkedAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }
 
-    private WorkDay calculateValidatedHoursAfterChangeClocking(WorkDay workDay, DayOfWeek day) {
+    private WorkDay calculateNetTimeWorkedAfterChangeClocking(WorkDay workDay, DayOfWeek day) {
         Optional<DailyPolicy> policy = dailyPolicyRepository.getPolicyFor(day);
 
         if (policy.isEmpty()) {
             throw new PolicyNotFoundException(day);
         }
 
-        return workDay.calculateNetTimeWorkedAccordingToPolicy(policy.get());
+        return workDay.calculateNetTimeWorked(policy.get());
     }
 
     private ClockingType determineClockingType(WorkDay workDay) {
