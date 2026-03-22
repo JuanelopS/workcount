@@ -78,6 +78,13 @@ public class WorkDay {
             throw new InvalidClockingSequenceException(clocking);
         }
 
+        if (!clockingList.isEmpty()) {
+            int last = clockingList.size() - 1;
+            if (clockingList.get(last).type() == clocking.type()) {
+                throw new InvalidClockingSequenceException(clocking);
+            }
+        }
+
         clockingList.add(clocking);
         clockingList.sort(Comparator.comparing(Clocking::time));
     }
@@ -100,7 +107,7 @@ public class WorkDay {
 
         Clocking newClocking = new Clocking(newTime, clockingList.get(originalIndex).type());
 
-        if (validateUpdateClocking(originalIndex, newTime)) {
+        if (validateUpdatedClocking(originalIndex, newTime)) {
             throw new InvalidClockingSequenceException(newClocking);
         }
 
@@ -174,7 +181,7 @@ public class WorkDay {
         return Optional.of(this.clockingList.get(clockingList.size() - 1).type());
     }
 
-    private boolean validateUpdateClocking(int index, LocalTime time) {
+    private boolean validateUpdatedClocking(int index, LocalTime time) {
         boolean validateBefore = index > 0 && time.isBefore(clockingList.get(index - 1).time());
         boolean validateAfter = index < (clockingList.size() - 1) &&
                 time.isAfter(clockingList.get(index + 1).time());

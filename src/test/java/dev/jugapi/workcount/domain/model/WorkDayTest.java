@@ -1,5 +1,6 @@
 package dev.jugapi.workcount.domain.model;
 
+import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -8,13 +9,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WorkDayTest {
 
     @Test
     @DisplayName("Should sum valid intervals")
     void calculateTotalHoursTest() {
-
         LocalDate today = LocalDate.now();
         WorkDay workDay = WorkDay.create(today);
 
@@ -27,5 +28,18 @@ public class WorkDayTest {
 
         System.out.println(total.toMinutes());
         assertEquals(Duration.ofMinutes(570), total); // 9.5 hours
+    }
+
+    @Test
+    @DisplayName("Clock in two time same type of clocking should throw exception")
+    void invalidClockingSequenceTest() {
+        LocalDate today = LocalDate.now();
+        WorkDay workDay = WorkDay.create(today);
+
+        workDay.addClocking(new Clocking(LocalTime.of(8, 0), ClockingType.IN));
+
+        assertThrows(InvalidClockingSequenceException.class, () -> {
+            workDay.addClocking(new Clocking(LocalTime.of(9, 0), ClockingType.IN));
+        });
     }
 }
