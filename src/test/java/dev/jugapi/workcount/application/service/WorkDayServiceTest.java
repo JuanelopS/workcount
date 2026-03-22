@@ -144,10 +144,4 @@ public class WorkDayServiceTest {
 
         assertEquals(Optional.of(ClockingType.OUT), result);
     }
-
-    @Test
-    @DisplayName("calculateNetTimeWorked: it should calculate successfully net worked hours")
-    void calculateNetTimeWorkedTest() {
-
-    }
 }
