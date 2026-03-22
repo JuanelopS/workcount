@@ -11,7 +11,7 @@ public class WorkDayMapper {
         entity.setId(null);
         entity.setDate(domain.getDate());
         entity.setClockingList(domain.getClockingList());
-        entity.setValidatedHours(domain.getValidatedHours());
+        entity.setValidatedHours(domain.getNetTimeWorked());
         return entity;
     }
 

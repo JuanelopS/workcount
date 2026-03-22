@@ -21,7 +21,7 @@ public class WorkDayWebMapper {
         return new WorkDayWebResponse(
                 workDay.getDate(),
                 workDay.getClockingList(),
-                workDay.getValidatedHours().toMinutes() / 60.0
+                workDay.getNetTimeWorked().toMinutes() / 60.0
         );
     }
 

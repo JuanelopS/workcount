@@ -24,7 +24,7 @@ public record WorkMonth(
 
     public Duration calculateTotalHoursWorked() {
         return registrations.stream()
-                .map(WorkDay::getValidatedHours)
+                .map(WorkDay::getNetTimeWorked)
                 .reduce(Duration::plus)
                 .orElse(Duration.ZERO);
     }

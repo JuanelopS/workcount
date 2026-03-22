@@ -89,7 +89,7 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
             throw new PolicyNotFoundException(day);
         }
 
-        return workDay.calculateNetHoursAccordingToPolicy(policy.get());
+        return workDay.calculateNetTimeWorkedAccordingToPolicy(policy.get());
     }
 
     private ClockingType determineClockingType(WorkDay workDay) {
