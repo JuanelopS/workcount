@@ -14,30 +14,30 @@ import java.util.Optional;
 public class WorkDay {
     private final LocalDate date;
     private final List<Clocking> clockingList;
-    private Duration validatedHours;
+    private Duration netHours;
 
-    private WorkDay(LocalDate date, List<Clocking> clockingList, Duration validatedHours) {
-        validatedHours = validatedHours != null ? validatedHours : Duration.ZERO;
-        validate(date, validatedHours);
+    private WorkDay(LocalDate date, List<Clocking> clockingList, Duration netHours) {
+        netHours = netHours != null ? netHours : Duration.ZERO;
+        validate(date, netHours);
 
         this.date = date;
         this.clockingList = new ArrayList<>(clockingList != null ? clockingList : List.of());
-        this.validatedHours = validatedHours;
+        this.netHours = netHours;
     }
 
-    public void validate(LocalDate date, Duration validatedHours) {
-        if (!checkMaxValidatedHours(validatedHours)) {
+    public void validate(LocalDate date, Duration netHours) {
+        if (!checkMaxNetHours(netHours)) {
             throw new IllegalArgumentException("Las horas validadas no pueden superar las 24 horas");
         }
     }
 
-    private boolean checkMaxValidatedHours(Duration validatedHours) {
-        return validatedHours.toHours() < 24;
+    private boolean checkMaxNetHours(Duration netHours) {
+        return netHours.toHours() < 24;
     }
 
     public static WorkDay of(LocalDate date, List<Clocking> clockingList,
-                             Duration validatedHours) {
-        return new WorkDay(date, clockingList, validatedHours);
+                             Duration netHours) {
+        return new WorkDay(date, clockingList, netHours);
     }
 
     public static WorkDay create(LocalDate day) {
@@ -53,7 +53,7 @@ public class WorkDay {
     }
 
     public Duration getValidatedHours() {
-        return validatedHours;
+        return netHours;
     }
 
     public Optional<LocalTime> getStartTime() {
@@ -144,12 +144,12 @@ public class WorkDay {
         return total;
     }
 
-    public WorkDay calculateValidatedHoursAccordingToPolicy(DailyPolicy policy) {
+    public WorkDay calculateNetHoursAccordingToPolicy(DailyPolicy policy) {
         Optional<LocalTime> optRealStart = this.getStartTime();
         Optional<LocalTime> optRealFinishing = this.getFinishingTime();
 
         if (optRealStart.isEmpty() || optRealFinishing.isEmpty()) {
-            this.validatedHours = Duration.ZERO;
+            this.netHours = Duration.ZERO;
             return this;
         }
 
@@ -167,7 +167,7 @@ public class WorkDay {
         if (cutFinishing.isNegative())
             cutFinishing = Duration.ZERO;
 
-        this.validatedHours = this.calculateTotalHours()
+        this.netHours = this.calculateTotalHours()
                 .minus(cutStart)
                 .minus(cutFinishing);
 
