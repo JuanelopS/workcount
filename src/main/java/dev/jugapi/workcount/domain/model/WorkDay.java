@@ -14,30 +14,30 @@ import java.util.Optional;
 public class WorkDay {
     private final LocalDate date;
     private final List<Clocking> clockingList;
-    private Duration netHours;
+    private Duration netTimeWorked;
 
-    private WorkDay(LocalDate date, List<Clocking> clockingList, Duration netHours) {
-        netHours = netHours != null ? netHours : Duration.ZERO;
-        validate(date, netHours);
+    private WorkDay(LocalDate date, List<Clocking> clockingList, Duration netTimeWorked) {
+        netTimeWorked = netTimeWorked != null ? netTimeWorked : Duration.ZERO;
+        validate(date, netTimeWorked);
 
         this.date = date;
         this.clockingList = new ArrayList<>(clockingList != null ? clockingList : List.of());
-        this.netHours = netHours;
+        this.netTimeWorked = netTimeWorked;
     }
 
-    public void validate(LocalDate date, Duration netHours) {
-        if (!checkMaxNetHours(netHours)) {
+    public void validate(LocalDate date, Duration netTimeWorked) {
+        if (!checkMaxNetHours(netTimeWorked)) {
             throw new IllegalArgumentException("Las horas validadas no pueden superar las 24 horas");
         }
     }
 
-    private boolean checkMaxNetHours(Duration netHours) {
-        return netHours.toHours() < 24;
+    private boolean checkMaxNetHours(Duration netTimeWorked) {
+        return netTimeWorked.toHours() < 24;
     }
 
     public static WorkDay of(LocalDate date, List<Clocking> clockingList,
-                             Duration netHours) {
-        return new WorkDay(date, clockingList, netHours);
+                             Duration netTimeWorked) {
+        return new WorkDay(date, clockingList, netTimeWorked);
     }
 
     public static WorkDay create(LocalDate day) {
@@ -53,7 +53,7 @@ public class WorkDay {
     }
 
     public Duration getValidatedHours() {
-        return netHours;
+        return netTimeWorked;
     }
 
     public Optional<LocalTime> getStartTime() {
@@ -149,7 +149,7 @@ public class WorkDay {
         Optional<LocalTime> optRealFinishing = this.getFinishingTime();
 
         if (optRealStart.isEmpty() || optRealFinishing.isEmpty()) {
-            this.netHours = Duration.ZERO;
+            this.netTimeWorked = Duration.ZERO;
             return this;
         }
 
@@ -167,7 +167,7 @@ public class WorkDay {
         if (cutFinishing.isNegative())
             cutFinishing = Duration.ZERO;
 
-        this.netHours = this.calculateTotalHours()
+        this.netTimeWorked = this.calculateTotalHours()
                 .minus(cutStart)
                 .minus(cutFinishing);
 
