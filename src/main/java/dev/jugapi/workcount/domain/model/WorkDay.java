@@ -184,7 +184,7 @@ public class WorkDay {
             Clocking current = list.get(i);
             Clocking next = list.get(i + 1);
 
-            if (current.type() == next.type()) {
+            if (current.type() == next.type() || current.time() == next.time()) {
                 throw new InvalidClockingSequenceException(next);
             }
         }
