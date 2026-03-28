@@ -86,7 +86,7 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
         Optional<DailyPolicy> policy = dailyPolicyRepository.getPolicyFor(day);
 
         if (policy.isEmpty()) {
-            throw new PolicyNotFoundException(day);
+            throw new PolicyNotFoundException(day, workDay.getDate());
         }
 
         return workDay.calculateNetTimeWorked(policy.get());
