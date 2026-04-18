@@ -97,7 +97,6 @@ public class WorkDay {
                 .orElseThrow(() -> new InexistentClockingException(originalTime));
 
         int indexToUpdate = tempList.indexOf(clockingToUpdate);
-        ClockingType type = tempList.get(indexToUpdate).type();
 
         tempList.set(indexToUpdate, new Clocking(newTime, clockingType));
         tempList.sort(Comparator.comparing(Clocking::time));
@@ -116,6 +115,8 @@ public class WorkDay {
         if (!removed) {
             throw new InexistentClockingException(time);
         }
+
+        orderClockingListTypes(clockingList);
     }
 
     public Duration calculateTotalHours() {
@@ -188,6 +189,19 @@ public class WorkDay {
             if (current.type() == next.type() || current.time() == next.time()) {
                 throw new InvalidClockingSequenceException(next);
             }
+        }
+    }
+
+    private void orderClockingListTypes(List<Clocking> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+
+        list.sort(Comparator.comparing(Clocking::time));
+
+        for (int i = 0; i < list.size(); i++) {
+            ClockingType expectedType = (i % 2 == 0) ? ClockingType.IN : ClockingType.OUT;
+            list.set(i, new Clocking(list.get(i).time(), expectedType));
         }
     }
 }

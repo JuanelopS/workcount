@@ -86,4 +86,6 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
 
         return workDay.calculateNetTimeWorked(policy.get());
     }
+
+
 }
