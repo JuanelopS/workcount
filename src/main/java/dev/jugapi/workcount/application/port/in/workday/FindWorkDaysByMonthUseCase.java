@@ -6,5 +6,5 @@ import java.time.YearMonth;
 import java.util.List;
 
 public interface FindWorkDaysByMonthUseCase {
-    List<WorkDay> findWorkDayByMonth(YearMonth month);
+    List<WorkDay> findWorkDaysByMonth(YearMonth month);
 }

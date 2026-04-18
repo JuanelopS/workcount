@@ -61,7 +61,7 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
         workDayRepository.delete(date);
     }
 
-    public List<WorkDay> findWorkDayByMonth(YearMonth month) {
+    public List<WorkDay> findWorkDaysByMonth(YearMonth month) {
         return workDayRepository.findByMonth(month);
     }
 
