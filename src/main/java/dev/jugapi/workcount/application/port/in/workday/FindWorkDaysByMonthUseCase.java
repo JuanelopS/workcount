@@ -5,6 +5,6 @@ import dev.jugapi.workcount.domain.model.WorkDay;
 import java.time.YearMonth;
 import java.util.List;
 
-public interface FindWorkDayByMonthUseCase {
+public interface FindWorkDaysByMonthUseCase {
     List<WorkDay> findWorkDayByMonth(YearMonth month);
 }

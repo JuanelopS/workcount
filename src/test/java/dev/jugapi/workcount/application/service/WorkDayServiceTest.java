@@ -36,7 +36,7 @@ public class WorkDayServiceTest {
     private DailyPolicyRepository dailyPolicyRepository;
 
     @InjectMocks
-    private WorkDaysService workDayService;
+    private WorkDayService workDayService;
 
     public LocalDate today;
     public WorkDay workDay;

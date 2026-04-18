@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Service
 public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCase,
-        DeleteWorkDayUseCase, FindWorkDayByMonthUseCase, GetCurrentStatusUseCase {
+        DeleteWorkDayUseCase, FindWorkDaysByMonthUseCase, GetCurrentStatusUseCase {
 
     private final WorkDayRepository workDayRepository;
     private final DailyPolicyRepository dailyPolicyRepository;
