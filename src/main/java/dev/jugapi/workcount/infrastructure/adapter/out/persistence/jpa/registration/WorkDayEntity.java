@@ -1,10 +1,10 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.domain.model.Clocking;
 import jakarta.persistence.*;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,15 +13,24 @@ public class WorkDayEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "working_day", unique = true)
     private LocalDate date;
-    private List<Clocking> clockingList;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "work_registration_clocking",
+            joinColumns = @JoinColumn(name = "work_registration_id")
+    )
+    @OrderColumn(name = "clocking_order")
+    private List<ClockingEmbeddable> clockingList = new ArrayList<>();
+
     private Duration validatedHours;
 
     public WorkDayEntity() {
     }
 
-    public WorkDayEntity(LocalDate date, List<Clocking> clockingList,
+    public WorkDayEntity(LocalDate date, List<ClockingEmbeddable> clockingList,
                          Duration validatedHours) {
         this.date = date;
         this.clockingList = clockingList;
@@ -44,11 +53,11 @@ public class WorkDayEntity {
         this.date = workingDay;
     }
 
-    public List<Clocking> getClockingList() {
+    public List<ClockingEmbeddable> getClockingList() {
         return clockingList;
     }
 
-    public void setClockingList(List<Clocking> clockingList) {
+    public void setClockingList(List<ClockingEmbeddable> clockingList) {
         this.clockingList = clockingList;
     }
 

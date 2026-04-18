@@ -27,7 +27,7 @@ public class WorkDayPersistenceAdapter implements WorkDayRepository {
 
         // upsert logic (id != null ? update : insert)
         Optional<WorkDayEntity> existing = repository
-                .findByWorkingDay(workDay.getDate());
+                .findByDate(workDay.getDate());
 
         existing.ifPresent(workRegistrationEntity
                 -> entity.setId(workRegistrationEntity.getId()));
@@ -38,7 +38,7 @@ public class WorkDayPersistenceAdapter implements WorkDayRepository {
 
     @Override
     public void delete(LocalDate workingDay) {
-        repository.findByWorkingDay(workingDay).ifPresentOrElse(
+        repository.findByDate(workingDay).ifPresentOrElse(
                 repository::delete,
                 () -> {
                     throw new InexistentWorkDayException(workingDay);
@@ -48,7 +48,7 @@ public class WorkDayPersistenceAdapter implements WorkDayRepository {
 
     @Override
     public Optional<WorkDay> findByDate(LocalDate date) {
-        return repository.findByWorkingDay(date)
+        return repository.findByDate(date)
                 .map(mapper::toDomain);
     }
 
@@ -56,7 +56,7 @@ public class WorkDayPersistenceAdapter implements WorkDayRepository {
     public List<WorkDay> findByMonth(YearMonth month) {
         LocalDate firstDay = month.atDay(1);
         LocalDate lastDay = month.atEndOfMonth();
-        List<WorkDayEntity> list = repository.findByWorkingDayBetween(firstDay, lastDay);
+        List<WorkDayEntity> list = repository.findByDateBetween(firstDay, lastDay);
         return list.stream()
                 .map(mapper::toDomain)
                 .toList();
@@ -64,6 +64,6 @@ public class WorkDayPersistenceAdapter implements WorkDayRepository {
 
     @Override
     public boolean exists(LocalDate date) {
-        return repository.existsByWorkingDay(date);
+        return repository.existsByDate(date);
     }
 }
