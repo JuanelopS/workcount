@@ -2,6 +2,7 @@ package dev.jugapi.workcount.domain.model;
 
 import dev.jugapi.workcount.domain.exception.InexistentClockingException;
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WorkDayTest {
 
-    LocalDate today = LocalDate.now();
-    WorkDay workDay = WorkDay.create(today);
+    private LocalDate day;
+    private WorkDay workDay;
+
+    @BeforeEach
+    void init() {
+        day = LocalDate.of(2026, 4, 18);
+        workDay = WorkDay.create(day);
+    }
 
     @Test
     @DisplayName("addClocking: clock in should be added correctly")
@@ -61,7 +68,8 @@ public class WorkDayTest {
     void updateClockingTest() {
         workDay.addClocking(new Clocking(LocalTime.of(8, 0), ClockingType.IN));
 
-        workDay.updateClocking(LocalTime.of(8, 0), LocalTime.of(8, 30));
+        workDay.updateClocking(LocalTime.of(8, 0), LocalTime.of(8, 30),
+                ClockingType.IN);
 
         LocalTime clockingTime = workDay.getClockingList().get(0).time();
 
@@ -75,7 +83,8 @@ public class WorkDayTest {
         workDay.addClocking(new Clocking(LocalTime.of(14, 0), ClockingType.OUT));
 
         assertThrows(InvalidClockingSequenceException.class, () -> {
-            workDay.updateClocking(LocalTime.of(14, 0), LocalTime.of(9, 30));
+            workDay.updateClocking(LocalTime.of(14, 0), LocalTime.of(9, 30),
+                    ClockingType.IN);
         });
     }
 
@@ -131,19 +140,18 @@ public class WorkDayTest {
     @Test
     @DisplayName("calculateNetTimeWorked: should follow the policy of the day")
     void calculateNetTimeWorkedTest() {
-        LocalDate date = LocalDate.of(2026, 3, 19); // Thursday
-        WorkDay day = WorkDay.create(date);
         DailyPolicy policy = new DailyPolicy(DayOfWeek.THURSDAY,
                 LocalTime.of(7, 30),
                 LocalTime.of(19, 30));
 
-        day.addClocking(new Clocking(LocalTime.of(7, 0), ClockingType.IN));
-        day.addClocking(new Clocking(LocalTime.of(14, 0), ClockingType.OUT));
-        day.addClocking(new Clocking(LocalTime.of(15, 0), ClockingType.IN));
-        day.addClocking(new Clocking(LocalTime.of(20, 30), ClockingType.OUT));
+        workDay.getClockingList().clear();
+        workDay.addClocking(new Clocking(LocalTime.of(7, 0), ClockingType.IN));
+        workDay.addClocking(new Clocking(LocalTime.of(14, 0), ClockingType.OUT));
+        workDay.addClocking(new Clocking(LocalTime.of(15, 0), ClockingType.IN));
+        workDay.addClocking(new Clocking(LocalTime.of(20, 30), ClockingType.OUT));
 
-        day.calculateNetTimeWorked(policy);
+        workDay.calculateNetTimeWorked(policy);
 
-        assertEquals(660, day.getNetTimeWorked().toMinutes()); // 11 hours
+        assertEquals(660, workDay.getNetTimeWorked().toMinutes()); // 11 hours
     }
 }
