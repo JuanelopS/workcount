@@ -62,11 +62,12 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
 
     @Override
     @Transactional
-    public WorkDay updateClocking(LocalDate date, LocalTime originalTime, LocalTime newTime) {
+    public WorkDay updateClocking(LocalDate date, LocalTime originalTime, LocalTime newTime,
+                                  ClockingType clockingType) {
         WorkDay workDay = workDayRepository.findByDate(date)
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
-        workDay.updateClocking(originalTime, newTime);
+        workDay.updateClocking(originalTime, newTime, clockingType);
         workDay = calculateNetTimeWorkedAfterChangeClocking(workDay, date.getDayOfWeek());
         return workDayRepository.save(workDay);
     }

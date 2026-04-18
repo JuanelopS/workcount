@@ -83,7 +83,8 @@ public class WorkDay {
         clockingList.addAll(tempList);
     }
 
-    public void updateClocking(LocalTime originalTime, LocalTime newTime) {
+    public void updateClocking(LocalTime originalTime, LocalTime newTime,
+                               ClockingType clockingType) {
         if (clockingList.isEmpty()) {
             throw new InexistentClockingException(originalTime);
         }
@@ -98,7 +99,7 @@ public class WorkDay {
         int indexToUpdate = tempList.indexOf(clockingToUpdate);
         ClockingType type = tempList.get(indexToUpdate).type();
 
-        tempList.set(indexToUpdate, new Clocking(newTime, type));
+        tempList.set(indexToUpdate, new Clocking(newTime, clockingType));
         tempList.sort(Comparator.comparing(Clocking::time));
         validateSequence(tempList);
         clockingList.clear();
