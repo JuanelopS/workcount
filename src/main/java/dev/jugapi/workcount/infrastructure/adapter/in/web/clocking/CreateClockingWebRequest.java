@@ -5,9 +5,8 @@ import dev.jugapi.workcount.domain.model.ClockingType;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record UpdateClockingRequest(
+public record CreateClockingWebRequest(
         LocalDate date,
-        LocalTime originalTime,
-        LocalTime newTime,
+        LocalTime time,
         ClockingType type) {
 }

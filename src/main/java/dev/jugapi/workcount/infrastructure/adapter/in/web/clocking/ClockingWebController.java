@@ -5,8 +5,8 @@ import dev.jugapi.workcount.application.port.in.clocking.CreateClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.DeleteClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.UpdateClockingUseCase;
 import dev.jugapi.workcount.domain.model.WorkDay;
-import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayMapper;
-import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayResponse;
+import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebMapper;
+import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebResponse;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,19 +17,19 @@ import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/api/clockings")
-public class ClockingController {
+public class ClockingWebController {
 
     private final ClockInUseCase clockInUseCase;
     private final CreateClockingUseCase createClockingUseCase;
     private final UpdateClockingUseCase updateClockingUseCase;
     private final DeleteClockingUseCase deleteClockingUseCase;
-    private final WorkDayMapper mapper;
+    private final WorkDayWebMapper mapper;
 
-    public ClockingController(ClockInUseCase clockInUseCase,
-                              CreateClockingUseCase createClockingUseCase,
-                              UpdateClockingUseCase updateClockingUseCase,
-                              DeleteClockingUseCase deleteClockingUseCase,
-                              WorkDayMapper mapper) {
+    public ClockingWebController(ClockInUseCase clockInUseCase,
+                                 CreateClockingUseCase createClockingUseCase,
+                                 UpdateClockingUseCase updateClockingUseCase,
+                                 DeleteClockingUseCase deleteClockingUseCase,
+                                 WorkDayWebMapper mapper) {
         this.clockInUseCase = clockInUseCase;
         this.createClockingUseCase = createClockingUseCase;
         this.updateClockingUseCase = updateClockingUseCase;
@@ -38,14 +38,14 @@ public class ClockingController {
     }
 
     @PostMapping("/clock-in")
-    public ResponseEntity<WorkDayResponse> clockIn() {
+    public ResponseEntity<WorkDayWebResponse> clockIn() {
         WorkDay workDay = clockInUseCase.clockIn();
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(workDay));
     }
 
     @PostMapping
-    public ResponseEntity<WorkDayResponse> createClocking(
-            @RequestBody CreateClockingRequest request
+    public ResponseEntity<WorkDayWebResponse> createClocking(
+            @RequestBody CreateClockingWebRequest request
     ) {
         WorkDay workDay = createClockingUseCase
                 .createClocking(request.date(), request.time(), request.type());
@@ -53,8 +53,8 @@ public class ClockingController {
     }
 
     @PutMapping
-    public ResponseEntity<WorkDayResponse> updateClocking(
-            @RequestBody UpdateClockingRequest request
+    public ResponseEntity<WorkDayWebResponse> updateClocking(
+            @RequestBody UpdateClockingWebRequest request
     ) {
         WorkDay workDay = updateClockingUseCase
                 .updateClocking(request.date(), request.originalTime(), request.newTime(),

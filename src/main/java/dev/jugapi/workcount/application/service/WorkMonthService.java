@@ -23,7 +23,7 @@ public class WorkMonthService implements CalculateMonthlyBalanceUseCase {
 
     public WorkMonthService(WorkDayRepository workDayRepository,
                             WorkMonthTemplateRepository workMonthTemplateRepository,
-                            @Value("${ss.policy.target-weekly-hours") Duration weeklyTarget) {
+                            @Value("${ss.policy.target-weekly-hours}") Duration weeklyTarget) {
         this.workDayRepository = workDayRepository;
         this.workMonthTemplateRepository = workMonthTemplateRepository;
         this.weeklyTarget = weeklyTarget;

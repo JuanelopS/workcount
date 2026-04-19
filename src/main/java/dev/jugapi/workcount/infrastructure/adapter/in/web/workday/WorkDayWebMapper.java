@@ -7,9 +7,9 @@ import java.time.Duration;
 import java.util.List;
 
 @Component
-public class WorkDayMapper {
+public class WorkDayWebMapper {
 
-    public WorkDay toDomain(WorkDayRequest request) {
+    public WorkDay toDomain(WorkDayWebRequest request) {
         return WorkDay.of(
                 request.workingDay(),
                 request.clockingList(),
@@ -17,15 +17,15 @@ public class WorkDayMapper {
         );
     }
 
-    public WorkDayResponse toResponse(WorkDay workDay) {
-        return new WorkDayResponse(
+    public WorkDayWebResponse toResponse(WorkDay workDay) {
+        return new WorkDayWebResponse(
                 workDay.getDate(),
                 workDay.getClockingList(),
                 workDay.getNetTimeWorked().toMinutes() / 60.0
         );
     }
 
-    public List<WorkDayResponse> toResponseList(List<WorkDay> list) {
+    public List<WorkDayWebResponse> toResponseList(List<WorkDay> list) {
         return list.stream()
                 .map(this::toResponse)
                 .toList();

@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class WorkDayMapper {
+public class WorkDayPersistenceMapper {
 
-    public WorkDayEntity toEntity(WorkDay domain) {
-        WorkDayEntity entity = new WorkDayEntity();
+    public WorkDayPersistenceEntity toEntity(WorkDay domain) {
+        WorkDayPersistenceEntity entity = new WorkDayPersistenceEntity();
         entity.setId(null);
         entity.setDate(domain.getDate());
         entity.setClockingList(toEmbeddableList(domain.getClockingList()));
@@ -18,7 +18,7 @@ public class WorkDayMapper {
         return entity;
     }
 
-    public WorkDay toDomain(WorkDayEntity entity) {
+    public WorkDay toDomain(WorkDayPersistenceEntity entity) {
         return WorkDay.of(
                 entity.getDate(),
                 toDomainList(entity.getClockingList()),

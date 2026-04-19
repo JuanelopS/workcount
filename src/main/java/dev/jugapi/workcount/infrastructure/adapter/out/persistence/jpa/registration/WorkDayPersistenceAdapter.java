@@ -13,26 +13,26 @@ import java.util.Optional;
 @Repository
 public class WorkDayPersistenceAdapter implements WorkDayRepository {
     private final SpringDataWorkRegistrationRepository repository;
-    private final WorkDayMapper mapper;
+    private final WorkDayPersistenceMapper mapper;
 
     public WorkDayPersistenceAdapter(SpringDataWorkRegistrationRepository repository,
-                                     WorkDayMapper mapper) {
+                                     WorkDayPersistenceMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
     @Override
     public WorkDay save(WorkDay workDay) {
-        WorkDayEntity entity = mapper.toEntity(workDay);
+        WorkDayPersistenceEntity entity = mapper.toEntity(workDay);
 
         // upsert logic (id != null ? update : insert)
-        Optional<WorkDayEntity> existing = repository
+        Optional<WorkDayPersistenceEntity> existing = repository
                 .findByDate(workDay.getDate());
 
         existing.ifPresent(workRegistrationEntity
                 -> entity.setId(workRegistrationEntity.getId()));
 
-        WorkDayEntity result = repository.save(entity);
+        WorkDayPersistenceEntity result = repository.save(entity);
         return mapper.toDomain(result);
     }
 

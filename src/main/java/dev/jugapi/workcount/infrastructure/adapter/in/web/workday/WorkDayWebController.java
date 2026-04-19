@@ -3,6 +3,7 @@ package dev.jugapi.workcount.infrastructure.adapter.in.web.workday;
 import dev.jugapi.workcount.application.port.in.workday.*;
 import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
 import dev.jugapi.workcount.domain.model.WorkDay;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/workdays")
-public class WorkDayController {
+public class WorkDayWebController {
 
     private final FindWorkDayByDateUseCase findWorkDayByDateUseCase;
     private final FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase;
@@ -22,16 +23,16 @@ public class WorkDayController {
     private final CreateWorkDayUseCase createWorkDayUseCase;
     private final UpdateWorkDayUseCase updateWorkDayUseCase;
     private final DeleteWorkDayUseCase deleteWorkDayUseCase;
-    private final WorkDayMapper mapper;
+    private final WorkDayWebMapper mapper;
 
-    public WorkDayController(FindWorkDaysByMonthUseCase findWorkDaysByMonthUseCase,
-                             FindWorkDayByDateUseCase findWorkDayByDateUseCase,
-                             FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase,
-                             CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase,
-                             CreateWorkDayUseCase createWorkDayUseCase,
-                             UpdateWorkDayUseCase updateWorkDayUseCase,
-                             DeleteWorkDayUseCase deleteWorkDayUseCase,
-                             WorkDayMapper mapper) {
+    public WorkDayWebController(FindWorkDaysByMonthUseCase findWorkDaysByMonthUseCase,
+                                FindWorkDayByDateUseCase findWorkDayByDateUseCase,
+                                FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase,
+                                CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase,
+                                CreateWorkDayUseCase createWorkDayUseCase,
+                                UpdateWorkDayUseCase updateWorkDayUseCase,
+                                DeleteWorkDayUseCase deleteWorkDayUseCase,
+                                WorkDayWebMapper mapper) {
         this.findWorkDayByDateUseCase = findWorkDayByDateUseCase;
         this.findWorkDaysByDateRangeUseCase = findWorkDaysByDateRangeUseCase;
         this.findWorkDaysByMonthUseCase = findWorkDaysByMonthUseCase;
@@ -43,7 +44,7 @@ public class WorkDayController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WorkDayResponse>> getWorkDaysByMonth(
+    public ResponseEntity<List<WorkDayWebResponse>> getWorkDaysByMonth(
             @RequestParam String month
     ) {
         List<WorkDay> workDays = findWorkDaysByMonthUseCase
@@ -52,22 +53,22 @@ public class WorkDayController {
         return ResponseEntity.ok(mapper.toResponseList(workDays));
     }
 
-    @GetMapping("/{date}")
-    public ResponseEntity<WorkDayResponse> getWorkDayByDate(
-            @PathVariable String date
+    @GetMapping("/day")
+    public ResponseEntity<WorkDayWebResponse> getWorkDayByDate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        WorkDay workDay = findWorkDayByDateUseCase.findWorkDayByDate(LocalDate.parse(date));
+        WorkDay workDay = findWorkDayByDateUseCase.findWorkDayByDate(date);
         return ResponseEntity.ok(mapper.toResponse(workDay));
     }
 
     @GetMapping("/range")
-    public ResponseEntity<List<WorkDayResponse>> getWorkDaysByRange(
-            @RequestParam String from,
-            @RequestParam String to
+    public ResponseEntity<List<WorkDayWebResponse>> getWorkDaysByRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
     ) {
         List<WorkDay> workDays = findWorkDaysByDateRangeUseCase.findWorkDaysByDateRange(
-                LocalDate.parse(from),
-                LocalDate.parse(to)
+                from,
+                to
         );
         return ResponseEntity.ok(mapper.toResponseList(workDays));
     }
@@ -82,16 +83,16 @@ public class WorkDayController {
     }
 
     @PostMapping
-    public ResponseEntity<WorkDayResponse> postWorkDay(
-            @RequestBody WorkDayRequest request
+    public ResponseEntity<WorkDayWebResponse> postWorkDay(
+            @RequestBody WorkDayWebRequest request
     ) {
         WorkDay created = createWorkDayUseCase.createWorkDay(mapper.toDomain(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(created));
     }
 
     @PutMapping
-    public ResponseEntity<WorkDayResponse> putWorkDay(
-            @RequestBody WorkDayRequest request
+    public ResponseEntity<WorkDayWebResponse> putWorkDay(
+            @RequestBody WorkDayWebRequest request
     ) {
         WorkDay updated = updateWorkDayUseCase.updateWorkDay(mapper.toDomain(request));
         return ResponseEntity.ok(mapper.toResponse(updated));

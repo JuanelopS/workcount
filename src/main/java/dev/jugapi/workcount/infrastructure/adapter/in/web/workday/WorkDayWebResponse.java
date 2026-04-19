@@ -5,7 +5,8 @@ import dev.jugapi.workcount.domain.model.Clocking;
 import java.time.LocalDate;
 import java.util.List;
 
-public record WorkDayRequest(
+public record WorkDayWebResponse(
         LocalDate workingDay,
-        List<Clocking> clockingList) {
+        List<Clocking> clockingList,
+        double validatedHours) {
 }
