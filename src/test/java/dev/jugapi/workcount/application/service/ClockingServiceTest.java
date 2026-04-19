@@ -14,12 +14,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,16 +39,18 @@ public class ClockingServiceTest {
     @Mock
     private DailyPolicyRepository dailyPolicyRepository;
 
-    @InjectMocks
     private ClockingService clockingService;
 
     private LocalDate day;
     private WorkDay workDay;
     private DailyPolicy policy;
+    private Clock fixedClock;
 
     @BeforeEach
     void init() {
-        day = LocalDate.of(2026, 4, 18);
+        day = LocalDate.of(2026, 4, 19);
+        fixedClock = Clock.fixed(Instant.parse("2026-04-19T10:00:00Z"), ZoneOffset.UTC);
+        clockingService = new ClockingService(workDayRepository, dailyPolicyRepository, fixedClock);
         workDay = WorkDay.create(day);
         workDay.addClocking(new Clocking(LocalTime.of(9, 0), ClockingType.IN));
         workDay.addClocking(new Clocking(LocalTime.of(14, 0), ClockingType.OUT));
@@ -57,9 +62,9 @@ public class ClockingServiceTest {
     @Test
     @DisplayName("clockIn: should create new WorkDay and clock in successfully")
     void clockInTestAndWorkDayNotExists() {
-        when(workDayRepository.findByDate(day)).thenReturn(Optional.empty());
+        Mockito.lenient().when(workDayRepository.findByDate(day)).thenReturn(Optional.empty());
 
-        when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
+        Mockito.lenient().when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
                 .thenReturn(Optional.of(policy));
 
         when(workDayRepository.save(any(WorkDay.class)))
@@ -78,9 +83,9 @@ public class ClockingServiceTest {
     void clockInTestAndWorkDayExists() {
         workDay.getClockingList().clear(); // to get empty workDay
 
-        when(workDayRepository.findByDate(day)).thenReturn(Optional.of(workDay));
+        Mockito.lenient().when(workDayRepository.findByDate(day)).thenReturn(Optional.of(workDay));
 
-        when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
+        Mockito.lenient().when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
                 .thenReturn(Optional.of(policy));
 
         when(workDayRepository.save(any(WorkDay.class)))
@@ -97,9 +102,9 @@ public class ClockingServiceTest {
     @Test
     @DisplayName("clockIn: policy not found scenario throws exception")
     void clockInTestPolicyNotFound() {
-        when(workDayRepository.findByDate(day)).thenReturn(Optional.empty());
+        Mockito.lenient().when(workDayRepository.findByDate(day)).thenReturn(Optional.empty());
 
-        when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
+        Mockito.lenient().when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
                 .thenReturn(Optional.empty());
 
         assertThrows(PolicyNotFoundException.class,
@@ -202,7 +207,7 @@ public class ClockingServiceTest {
     @DisplayName("updateClocking: invalid sequence should throw exception")
     void updateClockingInvalidSequenceTest() {
         when(workDayRepository.findByDate(day)).thenReturn(Optional.of(workDay));
-        
+
         assertThrows(InvalidClockingSequenceException.class, () ->
                 clockingService.updateClocking(day, LocalTime.of(9, 0),
                         LocalTime.of(8, 30), ClockingType.OUT));
