@@ -6,14 +6,14 @@ import java.util.List;
 
 public record WorkMonth(
         YearMonth month,
-        List<WorkRegistration> registrations,
+        List<WorkDay> registrations,
         Duration targetHours) {
 
     public WorkMonth {
         registrations = (registrations != null) ? List.copyOf(registrations) : List.of();
 
         boolean checkList = registrations.stream()
-                .anyMatch(wr -> !YearMonth.from(wr.getWorkingDay()).equals(month));
+                .anyMatch(wr -> !YearMonth.from(wr.getDate()).equals(month));
         if (checkList) {
             throw new IllegalArgumentException("All registration must belong to the month " + month);
         }
@@ -24,7 +24,7 @@ public record WorkMonth(
 
     public Duration calculateTotalHoursWorked() {
         return registrations.stream()
-                .map(WorkRegistration::getValidatedHours)
+                .map(WorkDay::getNetTimeWorked)
                 .reduce(Duration::plus)
                 .orElse(Duration.ZERO);
     }
