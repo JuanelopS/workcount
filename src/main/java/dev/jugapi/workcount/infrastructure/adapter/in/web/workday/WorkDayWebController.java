@@ -12,7 +12,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/workday")
+@RequestMapping("/api/workdays")
 public class WorkDayWebController {
 
     private final FindWorkDayByDateUseCase findWorkDayByDateUseCase;
