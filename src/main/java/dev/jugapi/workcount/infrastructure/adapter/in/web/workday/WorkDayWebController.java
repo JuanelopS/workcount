@@ -1,11 +1,6 @@
-package dev.jugapi.workcount.infrastructure.adapter.in.web;
+package dev.jugapi.workcount.infrastructure.adapter.in.web.workday;
 
-import dev.jugapi.workcount.application.port.in.workday.CreateWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.workday.DeleteWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.workday.FindWorkDayByDateUseCase;
-import dev.jugapi.workcount.application.port.in.workday.FindWorkDaysByDateRangeUseCase;
-import dev.jugapi.workcount.application.port.in.workday.FindWorkDaysByMonthUseCase;
-import dev.jugapi.workcount.application.port.in.workday.UpdateWorkDayUseCase;
+import dev.jugapi.workcount.application.port.in.workday.*;
 import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
 import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.http.HttpStatus;

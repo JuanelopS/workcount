@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.infrastructure.adapter.in.web;
+package dev.jugapi.workcount.infrastructure.adapter.in.web.exception;
 
 import dev.jugapi.workcount.domain.exception.AlreadyWorkDayException;
 import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
