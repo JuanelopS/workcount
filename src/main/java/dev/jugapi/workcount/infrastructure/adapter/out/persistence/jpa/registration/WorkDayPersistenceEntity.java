@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "work_registration")
-public class WorkDayEntity {
+public class WorkDayPersistenceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,7 +17,7 @@ public class WorkDayEntity {
     @Column(name = "working_day", unique = true)
     private LocalDate date;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "work_registration_clocking",
             joinColumns = @JoinColumn(name = "work_registration_id")
@@ -27,11 +27,11 @@ public class WorkDayEntity {
 
     private Duration validatedHours;
 
-    public WorkDayEntity() {
+    public WorkDayPersistenceEntity() {
     }
 
-    public WorkDayEntity(LocalDate date, List<ClockingEmbeddable> clockingList,
-                         Duration validatedHours) {
+    public WorkDayPersistenceEntity(LocalDate date, List<ClockingEmbeddable> clockingList,
+                                    Duration validatedHours) {
         this.date = date;
         this.clockingList = clockingList;
         this.validatedHours = validatedHours;
