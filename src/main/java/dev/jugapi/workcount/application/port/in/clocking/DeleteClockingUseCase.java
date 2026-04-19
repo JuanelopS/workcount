@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public interface DeleteClockingUseCase {
-    WorkDay deleteClockIn(LocalDate date, LocalTime time);
+    WorkDay deleteClocking(LocalDate date, LocalTime time);
 }
