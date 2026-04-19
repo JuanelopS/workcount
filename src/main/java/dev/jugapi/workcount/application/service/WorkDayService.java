@@ -20,7 +20,8 @@ import java.util.Optional;
 
 @Service
 public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCase,
-        DeleteWorkDayUseCase, FindWorkDaysByMonthUseCase, GetCurrentStatusUseCase {
+        DeleteWorkDayUseCase, FindWorkDayByDateUseCase, FindWorkDaysByDateRangeUseCase,
+        FindWorkDaysByMonthUseCase, GetCurrentStatusUseCase {
 
     private final WorkDayRepository workDayRepository;
     private final DailyPolicyRepository dailyPolicyRepository;
@@ -63,6 +64,20 @@ public class WorkDayService implements CreateWorkDayUseCase, UpdateWorkDayUseCas
 
     public List<WorkDay> findWorkDaysByMonth(YearMonth month) {
         return workDayRepository.findByMonth(month);
+    }
+
+    @Override
+    public WorkDay findWorkDayByDate(LocalDate date) {
+        return workDayRepository.findByDate(date)
+                .orElseThrow(() -> new InexistentWorkDayException(date));
+    }
+
+    @Override
+    public List<WorkDay> findWorkDaysByDateRange(LocalDate from, LocalDate to) {
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException("The start date must be before or equal to the end date");
+        }
+        return workDayRepository.findByDateBetween(from, to);
     }
 
     @Override

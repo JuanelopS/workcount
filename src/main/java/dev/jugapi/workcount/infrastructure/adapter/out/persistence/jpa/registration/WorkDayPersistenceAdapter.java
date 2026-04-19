@@ -53,13 +53,17 @@ public class WorkDayPersistenceAdapter implements WorkDayRepository {
     }
 
     @Override
+    public List<WorkDay> findByDateBetween(LocalDate from, LocalDate to) {
+        return repository.findByDateBetween(from, to).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<WorkDay> findByMonth(YearMonth month) {
         LocalDate firstDay = month.atDay(1);
         LocalDate lastDay = month.atEndOfMonth();
-        List<WorkDayEntity> list = repository.findByDateBetween(firstDay, lastDay);
-        return list.stream()
-                .map(mapper::toDomain)
-                .toList();
+        return findByDateBetween(firstDay, lastDay);
     }
 
     @Override

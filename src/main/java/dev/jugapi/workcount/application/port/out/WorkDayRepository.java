@@ -12,5 +12,6 @@ public interface WorkDayRepository {
     void delete(LocalDate date);
     boolean exists(LocalDate date);
     Optional<WorkDay> findByDate(LocalDate date);
+    List<WorkDay> findByDateBetween(LocalDate from, LocalDate to);
     List<WorkDay> findByMonth(YearMonth month);
 }
