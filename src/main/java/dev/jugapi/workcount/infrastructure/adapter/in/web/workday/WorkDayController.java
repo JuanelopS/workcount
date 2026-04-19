@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/workdays")
-public class WorkDayWebController {
+public class WorkDayController {
 
     private final FindWorkDayByDateUseCase findWorkDayByDateUseCase;
     private final FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase;
@@ -22,16 +22,16 @@ public class WorkDayWebController {
     private final CreateWorkDayUseCase createWorkDayUseCase;
     private final UpdateWorkDayUseCase updateWorkDayUseCase;
     private final DeleteWorkDayUseCase deleteWorkDayUseCase;
-    private final WorkDayWebMapper mapper;
+    private final WorkDayMapper mapper;
 
-    public WorkDayWebController(FindWorkDaysByMonthUseCase findWorkDaysByMonthUseCase,
-                                FindWorkDayByDateUseCase findWorkDayByDateUseCase,
-                                FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase,
-                                CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase,
-                                CreateWorkDayUseCase createWorkDayUseCase,
-                                UpdateWorkDayUseCase updateWorkDayUseCase,
-                                DeleteWorkDayUseCase deleteWorkDayUseCase,
-                                WorkDayWebMapper mapper) {
+    public WorkDayController(FindWorkDaysByMonthUseCase findWorkDaysByMonthUseCase,
+                             FindWorkDayByDateUseCase findWorkDayByDateUseCase,
+                             FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase,
+                             CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase,
+                             CreateWorkDayUseCase createWorkDayUseCase,
+                             UpdateWorkDayUseCase updateWorkDayUseCase,
+                             DeleteWorkDayUseCase deleteWorkDayUseCase,
+                             WorkDayMapper mapper) {
         this.findWorkDayByDateUseCase = findWorkDayByDateUseCase;
         this.findWorkDaysByDateRangeUseCase = findWorkDaysByDateRangeUseCase;
         this.findWorkDaysByMonthUseCase = findWorkDaysByMonthUseCase;
@@ -43,7 +43,7 @@ public class WorkDayWebController {
     }
 
     @GetMapping
-    public ResponseEntity<List<WorkDayWebResponse>> getWorkDaysByMonth(
+    public ResponseEntity<List<WorkDayResponse>> getWorkDaysByMonth(
             @RequestParam String month
     ) {
         List<WorkDay> workDays = findWorkDaysByMonthUseCase
@@ -53,7 +53,7 @@ public class WorkDayWebController {
     }
 
     @GetMapping("/{date}")
-    public ResponseEntity<WorkDayWebResponse> getWorkDayByDate(
+    public ResponseEntity<WorkDayResponse> getWorkDayByDate(
             @PathVariable String date
     ) {
         WorkDay workDay = findWorkDayByDateUseCase.findWorkDayByDate(LocalDate.parse(date));
@@ -61,7 +61,7 @@ public class WorkDayWebController {
     }
 
     @GetMapping("/range")
-    public ResponseEntity<List<WorkDayWebResponse>> getWorkDaysByRange(
+    public ResponseEntity<List<WorkDayResponse>> getWorkDaysByRange(
             @RequestParam String from,
             @RequestParam String to
     ) {
@@ -82,16 +82,16 @@ public class WorkDayWebController {
     }
 
     @PostMapping
-    public ResponseEntity<WorkDayWebResponse> postWorkDay(
-            @RequestBody WorkDayWebRequest request
+    public ResponseEntity<WorkDayResponse> postWorkDay(
+            @RequestBody WorkDayRequest request
     ) {
         WorkDay created = createWorkDayUseCase.createWorkDay(mapper.toDomain(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(created));
     }
 
     @PutMapping
-    public ResponseEntity<WorkDayWebResponse> putWorkDay(
-            @RequestBody WorkDayWebRequest request
+    public ResponseEntity<WorkDayResponse> putWorkDay(
+            @RequestBody WorkDayRequest request
     ) {
         WorkDay updated = updateWorkDayUseCase.updateWorkDay(mapper.toDomain(request));
         return ResponseEntity.ok(mapper.toResponse(updated));
