@@ -78,13 +78,13 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
 
     @Override
     @Transactional
-    public WorkDay deleteClocking(LocalDate date, LocalTime time) {
+    public void deleteClocking(LocalDate date, LocalTime time) {
         WorkDay workDay = workDayRepository.findByDate(date)
                 .orElseThrow(() -> new InexistentWorkDayException(date));
 
         workDay.deleteClocking(time);
         workDay = calculateNetTimeWorkedAfterChangeClocking(workDay, date.getDayOfWeek());
-        return workDayRepository.save(workDay);
+        workDayRepository.save(workDay);
     }
 
     private WorkDay calculateNetTimeWorkedAfterChangeClocking(WorkDay workDay, DayOfWeek day) {

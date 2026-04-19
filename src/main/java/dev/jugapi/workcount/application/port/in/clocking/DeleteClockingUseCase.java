@@ -1,10 +1,8 @@
 package dev.jugapi.workcount.application.port.in.clocking;
 
-import dev.jugapi.workcount.domain.model.WorkDay;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public interface DeleteClockingUseCase {
-    WorkDay deleteClocking(LocalDate date, LocalTime time);
+    void deleteClocking(LocalDate date, LocalTime time);
 }
