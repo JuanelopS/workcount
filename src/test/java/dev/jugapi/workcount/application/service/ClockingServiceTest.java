@@ -18,11 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -215,7 +211,7 @@ public class ClockingServiceTest {
 
     @Test
     @DisplayName("deleteClockIn: should delete a clocking successfully")
-    void deleteClockInTest() {
+    void deleteClockingTest() {
         when(workDayRepository.findByDate(day)).thenReturn(Optional.of(workDay));
 
         when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
@@ -224,7 +220,7 @@ public class ClockingServiceTest {
         when(workDayRepository.save(any(WorkDay.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        WorkDay result = clockingService.deleteClockIn(day, LocalTime.of(9, 0));
+        WorkDay result = clockingService.deleteClocking(day, LocalTime.of(9, 0));
 
         assertNotNull(result);
         assertEquals(1, result.getClockingList().size());
@@ -238,7 +234,7 @@ public class ClockingServiceTest {
         when(workDayRepository.findByDate(day)).thenReturn(Optional.empty());
 
         assertThrows(InexistentWorkDayException.class,
-                () -> clockingService.deleteClockIn(day, LocalTime.of(9, 0)));
+                () -> clockingService.deleteClocking(day, LocalTime.of(9, 0)));
     }
 
     @Test
@@ -249,6 +245,6 @@ public class ClockingServiceTest {
         workDay.getClockingList().clear(); // to get empty clocking list
 
         assertThrows(InexistentClockingException.class,
-                () -> clockingService.deleteClockIn(day, LocalTime.of(9, 0)));
+                () -> clockingService.deleteClocking(day, LocalTime.of(9, 0)));
     }
 }
