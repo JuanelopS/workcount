@@ -15,6 +15,7 @@ import dev.jugapi.workcount.domain.model.WorkDay;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,18 +27,21 @@ public class ClockingService implements ClockInUseCase, CreateClockingUseCase,
 
     private final WorkDayRepository workDayRepository;
     private final DailyPolicyRepository dailyPolicyRepository;
+    private final Clock clock;
 
     public ClockingService(WorkDayRepository workDayRepository,
-                           DailyPolicyRepository dailyPolicyRepository) {
+                           DailyPolicyRepository dailyPolicyRepository,
+                           Clock clock) {
         this.workDayRepository = workDayRepository;
         this.dailyPolicyRepository = dailyPolicyRepository;
+        this.clock = clock;
     }
 
     @Override
     @Transactional
     public WorkDay clockIn() {
-        LocalDate today = LocalDate.now();
-        LocalTime now = LocalTime.now();
+        LocalDate today = LocalDate.now(clock);
+        LocalTime now = LocalTime.now(clock);
         Optional<WorkDay> optWorkDay = workDayRepository.findByDate(today);
 
         WorkDay workDay = optWorkDay.orElseGet(() -> WorkDay.create(today));
