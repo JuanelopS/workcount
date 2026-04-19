@@ -2,6 +2,10 @@ package dev.jugapi.workcount.domain.model;
 
 import dev.jugapi.workcount.domain.exception.InexistentClockingException;
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
+import dev.jugapi.workcount.domain.model.clocking.Clocking;
+import dev.jugapi.workcount.domain.model.clocking.ClockingType;
+import dev.jugapi.workcount.domain.model.policy.DailyPolicy;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

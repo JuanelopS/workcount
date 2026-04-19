@@ -1,12 +1,12 @@
 package dev.jugapi.workcount.application.service;
 
 import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
-import dev.jugapi.workcount.application.port.out.WorkDayRepository;
-import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
+import dev.jugapi.workcount.application.port.out.workday.WorkDayRepository;
+import dev.jugapi.workcount.application.port.out.workmonth.WorkMonthTemplateRepository;
 import dev.jugapi.workcount.domain.exception.TemplateNotFoundException;
-import dev.jugapi.workcount.domain.model.WorkDay;
-import dev.jugapi.workcount.domain.model.WorkMonth;
-import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
+import dev.jugapi.workcount.domain.model.workmonth.WorkMonth;
+import dev.jugapi.workcount.domain.model.workmonth.WorkMonthTemplate;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

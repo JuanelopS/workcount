@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web.workday;
 
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;

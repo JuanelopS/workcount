@@ -1,14 +1,14 @@
 package dev.jugapi.workcount.application.service;
 
 import dev.jugapi.workcount.application.port.in.workday.*;
-import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
-import dev.jugapi.workcount.application.port.out.WorkDayRepository;
+import dev.jugapi.workcount.application.port.out.policy.DailyPolicyRepository;
+import dev.jugapi.workcount.application.port.out.workday.WorkDayRepository;
 import dev.jugapi.workcount.domain.exception.AlreadyWorkDayException;
 import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.exception.PolicyNotFoundException;
-import dev.jugapi.workcount.domain.model.ClockingType;
-import dev.jugapi.workcount.domain.model.DailyPolicy;
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.clocking.ClockingType;
+import dev.jugapi.workcount.domain.model.policy.DailyPolicy;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

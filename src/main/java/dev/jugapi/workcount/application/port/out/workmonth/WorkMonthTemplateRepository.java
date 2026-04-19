@@ -1,6 +1,6 @@
-package dev.jugapi.workcount.application.port.out;
+package dev.jugapi.workcount.application.port.out.workmonth;
 
-import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
+import dev.jugapi.workcount.domain.model.workmonth.WorkMonthTemplate;
 
 import java.time.YearMonth;
 import java.util.Optional;

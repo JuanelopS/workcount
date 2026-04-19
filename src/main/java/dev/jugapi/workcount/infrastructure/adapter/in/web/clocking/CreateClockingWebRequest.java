@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.in.web.clocking;
 
-import dev.jugapi.workcount.domain.model.ClockingType;
+import dev.jugapi.workcount.domain.model.clocking.ClockingType;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

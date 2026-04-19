@@ -4,7 +4,7 @@ import dev.jugapi.workcount.application.port.in.clocking.ClockInUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.CreateClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.DeleteClockingUseCase;
 import dev.jugapi.workcount.application.port.in.clocking.UpdateClockingUseCase;
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebMapper;
 import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebResponse;
 import org.springframework.format.annotation.DateTimeFormat;

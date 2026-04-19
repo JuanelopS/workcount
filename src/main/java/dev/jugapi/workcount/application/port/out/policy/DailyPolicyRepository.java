@@ -1,6 +1,6 @@
-package dev.jugapi.workcount.application.port.out;
+package dev.jugapi.workcount.application.port.out.policy;
 
-import dev.jugapi.workcount.domain.model.DailyPolicy;
+import dev.jugapi.workcount.domain.model.policy.DailyPolicy;
 
 import java.time.DayOfWeek;
 import java.util.Optional;

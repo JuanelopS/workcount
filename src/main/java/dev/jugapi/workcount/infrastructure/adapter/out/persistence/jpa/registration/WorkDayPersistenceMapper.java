@@ -1,7 +1,7 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.domain.model.Clocking;
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.clocking.Clocking;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.policy;
 
-import dev.jugapi.workcount.domain.model.DailyPolicy;
-import dev.jugapi.workcount.application.port.out.DailyPolicyRepository;
+import dev.jugapi.workcount.application.port.out.policy.DailyPolicyRepository;
+import dev.jugapi.workcount.domain.model.policy.DailyPolicy;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;

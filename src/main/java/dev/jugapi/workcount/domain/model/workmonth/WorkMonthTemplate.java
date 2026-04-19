@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.domain.model;
+package dev.jugapi.workcount.domain.model.workmonth;
 
 import java.time.Duration;
 import java.time.YearMonth;

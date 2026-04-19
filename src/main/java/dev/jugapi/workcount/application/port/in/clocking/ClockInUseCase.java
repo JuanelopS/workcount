@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.application.port.in.clocking;
 
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 
 public interface ClockInUseCase {
     WorkDay clockIn();

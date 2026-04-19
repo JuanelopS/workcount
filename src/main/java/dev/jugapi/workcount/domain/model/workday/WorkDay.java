@@ -1,7 +1,10 @@
-package dev.jugapi.workcount.domain.model;
+package dev.jugapi.workcount.domain.model.workday;
 
 import dev.jugapi.workcount.domain.exception.InexistentClockingException;
 import dev.jugapi.workcount.domain.exception.InvalidClockingSequenceException;
+import dev.jugapi.workcount.domain.model.clocking.Clocking;
+import dev.jugapi.workcount.domain.model.clocking.ClockingType;
+import dev.jugapi.workcount.domain.model.policy.DailyPolicy;
 
 import java.time.Duration;
 import java.time.LocalDate;

@@ -1,8 +1,8 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.application.port.out.WorkDayRepository;
+import dev.jugapi.workcount.application.port.out.workday.WorkDayRepository;
 import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.domain.model;
+package dev.jugapi.workcount.domain.model.policy;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;

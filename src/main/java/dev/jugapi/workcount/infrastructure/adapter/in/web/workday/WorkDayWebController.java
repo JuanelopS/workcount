@@ -2,7 +2,7 @@ package dev.jugapi.workcount.infrastructure.adapter.in.web.workday;
 
 import dev.jugapi.workcount.application.port.in.workday.*;
 import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
-import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.domain.model.workday.WorkDay;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

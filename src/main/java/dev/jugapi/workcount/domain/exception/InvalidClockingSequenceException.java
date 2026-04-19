@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.domain.exception;
 
-import dev.jugapi.workcount.domain.model.Clocking;
+import dev.jugapi.workcount.domain.model.clocking.Clocking;
 
 public class InvalidClockingSequenceException extends RuntimeException {
     public InvalidClockingSequenceException(Clocking clocking) {

@@ -1,7 +1,7 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.template;
 
-import dev.jugapi.workcount.domain.model.WorkMonthTemplate;
-import dev.jugapi.workcount.application.port.out.WorkMonthTemplateRepository;
+import dev.jugapi.workcount.domain.model.workmonth.WorkMonthTemplate;
+import dev.jugapi.workcount.application.port.out.workmonth.WorkMonthTemplateRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;

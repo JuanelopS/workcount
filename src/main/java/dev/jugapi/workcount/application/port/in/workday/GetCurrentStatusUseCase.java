@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.application.port.in.workday;
 
-import dev.jugapi.workcount.domain.model.ClockingType;
+import dev.jugapi.workcount.domain.model.clocking.ClockingType;
 
 import java.util.Optional;
 

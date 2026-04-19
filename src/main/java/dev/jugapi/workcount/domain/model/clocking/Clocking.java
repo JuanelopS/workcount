@@ -1,4 +1,4 @@
-package dev.jugapi.workcount.domain.model;
+package dev.jugapi.workcount.domain.model.clocking;
 
 import java.time.LocalTime;
 

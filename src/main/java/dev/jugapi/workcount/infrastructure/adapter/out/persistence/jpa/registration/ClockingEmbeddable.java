@@ -1,6 +1,6 @@
 package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registration;
 
-import dev.jugapi.workcount.domain.model.ClockingType;
+import dev.jugapi.workcount.domain.model.clocking.ClockingType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
