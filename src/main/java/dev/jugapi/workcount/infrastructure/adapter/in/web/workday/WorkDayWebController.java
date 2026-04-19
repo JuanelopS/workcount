@@ -53,9 +53,9 @@ public class WorkDayWebController {
         return ResponseEntity.ok(mapper.toResponseList(workDays));
     }
 
-    @GetMapping("/day")
+    @GetMapping("/{date}")
     public ResponseEntity<WorkDayWebResponse> getWorkDayByDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
         WorkDay workDay = findWorkDayByDateUseCase.findWorkDayByDate(date);
         return ResponseEntity.ok(mapper.toResponse(workDay));
