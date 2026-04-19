@@ -22,8 +22,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,29 +37,29 @@ public class WorkDayServiceTest {
     @InjectMocks
     private WorkDayService workDayService;
 
-    public LocalDate today;
-    public WorkDay workDay;
-    public DailyPolicy policy;
+    private LocalDate day;
+    private WorkDay workDay;
+    private DailyPolicy policy;
 
     @BeforeEach
     void init() {
-        today = LocalDate.now();
-        workDay = WorkDay.create(today);
+        day = LocalDate.of(2026, 4, 16);
+        workDay = WorkDay.create(day);
         workDay.addClocking(new Clocking(LocalTime.of(9, 0), ClockingType.IN));
         workDay.addClocking(new Clocking(LocalTime.of(14, 0), ClockingType.OUT));
         workDay.addClocking(new Clocking(LocalTime.of(15, 0), ClockingType.IN));
         workDay.addClocking(new Clocking(LocalTime.of(20, 0), ClockingType.OUT));
 
-        policy = new DailyPolicy(today.getDayOfWeek(),
+        policy = new DailyPolicy(day.getDayOfWeek(),
                 LocalTime.of(7, 30), LocalTime.of(19, 30));
     }
 
     @Test
     @DisplayName("createWorkDay: it should create a workDay successfully")
     void createWorkDayTest() {
-        when(workDayRepository.exists(today)).thenReturn(false);
+        when(workDayRepository.exists(day)).thenReturn(false);
 
-        when(dailyPolicyRepository.getPolicyFor(today.getDayOfWeek()))
+        when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
                 .thenReturn(Optional.of(policy));
 
         when(workDayRepository.save(any(WorkDay.class))).thenReturn(workDay);
@@ -74,7 +73,7 @@ public class WorkDayServiceTest {
     @Test
     @DisplayName("createWorkDay: it should throw an exception because it already exists on that date")
     void createWorkDayWhenAlreadyExists() {
-        when(workDayRepository.exists(today)).thenReturn(true);
+        when(workDayRepository.exists(day)).thenReturn(true);
 
         assertThrows(AlreadyWorkDayException.class, () -> {
             workDayService.createWorkDay(workDay);
@@ -85,11 +84,11 @@ public class WorkDayServiceTest {
     @Test
     @DisplayName("updateWorkDay: it should update workDay successfully")
     void updateWorkDayTest() {
-        WorkDay updatedWorkDay = WorkDay.of(today, List.of(), Duration.ZERO);
+        WorkDay updatedWorkDay = WorkDay.of(day, List.of(), Duration.ZERO);
 
-        when(workDayRepository.exists(today)).thenReturn(true);
+        when(workDayRepository.exists(day)).thenReturn(true);
 
-        when(dailyPolicyRepository.getPolicyFor(today.getDayOfWeek()))
+        when(dailyPolicyRepository.getPolicyFor(day.getDayOfWeek()))
                 .thenReturn(Optional.of(policy));
 
         when(workDayRepository.save(any(WorkDay.class))).thenReturn(updatedWorkDay);
@@ -103,7 +102,7 @@ public class WorkDayServiceTest {
     @Test
     @DisplayName("updateWorkDay: it should throw an exception because workDay doesn't exists")
     void updateWorkDayWhenNoExists() {
-        when(workDayRepository.exists(today)).thenReturn(false);
+        when(workDayRepository.exists(day)).thenReturn(false);
 
         assertThrows(InexistentWorkDayException.class, () -> {
             workDayService.updateWorkDay(workDay);
@@ -114,34 +113,106 @@ public class WorkDayServiceTest {
     @Test
     @DisplayName("deleteWorkDay: it should delete workDay successfully")
     void deleteWorkDayTest() {
-        when(workDayRepository.exists(today)).thenReturn(true);
+        when(workDayRepository.exists(day)).thenReturn(true);
 
-        doNothing().when(workDayRepository).delete(today);
+        doNothing().when(workDayRepository).delete(day);
 
-        workDayService.deleteWorkDay(today);
-        verify(workDayRepository).delete(today);
+        workDayService.deleteWorkDay(day);
+        verify(workDayRepository).delete(day);
     }
 
     @Test
     @DisplayName("deleteWorkDay: it should throw an exception because workDay doesn't exists")
     void deleteWorkDayWhenNoExists() {
-        when(workDayRepository.exists(today)).thenReturn(false);
+        when(workDayRepository.exists(day)).thenReturn(false);
 
         assertThrows(InexistentWorkDayException.class, () -> {
-            workDayService.deleteWorkDay(today);
+            workDayService.deleteWorkDay(day);
         });
-        verify(workDayRepository, never()).delete(today);
+        verify(workDayRepository, never()).delete(day);
+    }
+
+    @Test
+    @DisplayName("findWorkDaysByDate: it should return a existent workday")
+    void findWorkDayByDateTest() {
+        when(workDayRepository.findByDate(day)).thenReturn(Optional.of(workDay));
+
+        WorkDay result = workDayService.findWorkDayByDate(day);
+
+        assertEquals(workDay, result);
+        assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("findWorkDaysByDate: it should throw an exception because workDay doesn't exists")
+    void findWorkDayByDateWhenNoExists() {
+        when(workDayRepository.findByDate(day)).thenReturn(Optional.empty());
+
+        assertThrows(InexistentWorkDayException.class, () -> workDayService.findWorkDayByDate(day));
+    }
+
+    @Test
+    @DisplayName("findWorkDaysByDateRange: it should return a list of workdays")
+    void findWorkDaysByDateRangeTest() {
+        WorkDay anotherWorkDay = WorkDay.create(LocalDate.of(2026, 4, 17));
+        anotherWorkDay.addClocking(new Clocking(LocalTime.of(9, 0), ClockingType.IN));
+        anotherWorkDay.addClocking(new Clocking(LocalTime.of(14, 0), ClockingType.OUT));
+
+        when(workDayRepository.findByDateBetween(day, day.plusDays(1)))
+                .thenReturn(List.of(workDay, anotherWorkDay));
+
+        List<WorkDay> result = workDayService.findWorkDaysByDateRange(day,
+                day.plusDays(1));
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.contains(workDay));
+        assertTrue(result.contains(anotherWorkDay));
+    }
+
+    @Test
+    @DisplayName("findWorkDaysByDateRange: it should throw an IllegalArgumentException because " +
+            "start date is after end date")
+    void findWorkDaysByDateRangeTestWhenStartDateAfterEndDate() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            workDayService.findWorkDaysByDateRange(day.plusDays(1), day);
+        });
+    }
+
+    @Test
+    @DisplayName("findWorkDaysByDateRange: it should return an empty list when no workdays are " +
+            "found")
+    void findWorkDayByDateRangeTestWhenNoWorkDaysAreFound() {
+        when(workDayRepository.findByDateBetween(day, day.plusDays(1)))
+                .thenReturn(List.of());
+
+        List<WorkDay> result = workDayService
+                .findWorkDaysByDateRange(day, day.plusDays(1));
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @Test
     @DisplayName("getCurrentStatus: it should return current status successfully")
     void getCurrentStatusTest() {
+        LocalDate today = LocalDate.now();
         when(workDayRepository.exists(today)).thenReturn(true);
-
         when(workDayRepository.findByDate(today)).thenReturn(Optional.of(workDay));
 
         Optional<ClockingType> result = workDayService.getCurrentStatus();
 
         assertEquals(Optional.of(ClockingType.OUT), result);
+    }
+
+    @Test
+    @DisplayName("getCurrentStatus: it should throw an exception because workDay doesn't exists")
+    void getCurrentStatusWhenNoWorkDay() {
+        LocalDate today = LocalDate.now();
+
+        when(workDayRepository.exists(today)).thenReturn(false);
+
+        assertThrows(InexistentWorkDayException.class, () -> workDayService.getCurrentStatus());
+        verify(workDayRepository, never()).findByDate(any());
     }
 }
