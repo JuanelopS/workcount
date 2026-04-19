@@ -220,11 +220,10 @@ public class ClockingServiceTest {
         when(workDayRepository.save(any(WorkDay.class)))
                 .thenAnswer(i -> i.getArgument(0));
 
-        WorkDay result = clockingService.deleteClocking(day, LocalTime.of(9, 0));
+        clockingService.deleteClocking(day, LocalTime.of(9, 0));
 
-        assertNotNull(result);
-        assertEquals(1, result.getClockingList().size());
-        assertEquals(ClockingType.IN, result.getClockingList().get(0).type());
+        assertEquals(1, workDay.getClockingList().size());
+        assertEquals(ClockingType.IN, workDay.getClockingList().get(0).type());
         verify(workDayRepository).save(any(WorkDay.class));
     }
 
