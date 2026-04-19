@@ -1,12 +1,15 @@
-/*
 package dev.jugapi.workcount.infrastructure.adapter.in.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.jugapi.workcount.application.port.in.RegisterWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.workday.DeleteWorkDayUseCase;
-import dev.jugapi.workcount.application.port.in.workday.FindWorkDayByMonthUseCase;
+import dev.jugapi.workcount.application.port.in.workday.*;
 import dev.jugapi.workcount.application.port.in.workmonth.CalculateMonthlyBalanceUseCase;
+import dev.jugapi.workcount.domain.model.Clocking;
+import dev.jugapi.workcount.domain.model.ClockingType;
 import dev.jugapi.workcount.domain.model.WorkDay;
+import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebController;
+import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebMapper;
+import dev.jugapi.workcount.infrastructure.adapter.in.web.workday.WorkDayWebRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,95 +37,151 @@ public class WorkDayWebControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private RegisterWorkDayUseCase registerWorkDayUseCase;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockitoBean
-    private FindWorkDayByMonthUseCase findWorkDayByMonthUseCase;
+    private FindWorkDayByDateUseCase findWorkDayByDateUseCase;
 
     @MockitoBean
-    private CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
+    private FindWorkDaysByMonthUseCase findWorkDaysByMonthUseCase;
+
+    @MockitoBean
+    private FindWorkDaysByDateRangeUseCase findWorkDaysByDateRangeUseCase;
+
+    @MockitoBean
+    private CreateWorkDayUseCase createWorkDayUseCase;
+
+    @MockitoBean
+    private UpdateWorkDayUseCase updateWorkDayUseCase;
 
     @MockitoBean
     private DeleteWorkDayUseCase deleteWorkDayUseCase;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockitoBean
+    private CalculateMonthlyBalanceUseCase calculateMonthlyBalanceUseCase;
 
-    @Test
-    @DisplayName("Should return 201 Created")
-    void shouldReturn201WhenRegistrationIsValid() throws Exception {
-        WorkDay request = WorkDay.of(
-                LocalDate.of(2026, 3, 3),
-                LocalTime.of(8, 0),
-                LocalTime.of(16, 0),
-                null,
+    private WorkDay workDay;
+    private WorkDayWebRequest request;
+
+    @BeforeEach
+    void setUp() {
+        workDay = WorkDay.of(
+                LocalDate.of(2023, 10, 2),
+                List.of(
+                        new Clocking(LocalTime.of(8, 0), ClockingType.IN),
+                        new Clocking(LocalTime.of(16, 0), ClockingType.OUT)
+                ),
                 Duration.ofHours(8)
         );
 
-        when(registerWorkDayUseCase.registerWorkDay(any())).thenReturn(request);
+        request = new WorkDayWebRequest(
+                LocalDate.of(2023, 10, 2),
+                List.of(
+                        new Clocking(LocalTime.of(8, 0), ClockingType.IN),
+                        new Clocking(LocalTime.of(16, 0), ClockingType.OUT)
+                )
+        );
+    }
 
-        mockMvc.perform(post("/api/work-registrations/save")
+    @Test
+    @DisplayName("GET /api/workdays?month=2023-10 returns 200 with list")
+    void getWorkDaysByMonthReturns200() throws Exception {
+        when(findWorkDaysByMonthUseCase.findWorkDaysByMonth(YearMonth.of(2023, 10)))
+                .thenReturn(List.of(workDay));
+
+        mockMvc.perform(get("/api/workdays").param("month", "2023-10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].workingDay").value("2023-10-02"))
+                .andExpect(jsonPath("$[0].validatedHours").value(8.0));
+    }
+
+    @Test
+    @DisplayName("GET /api/workdays/2023-10-02 returns 200 with workday")
+    void getWorkDayByDateTest() throws Exception {
+        when(findWorkDayByDateUseCase
+                .findWorkDayByDate(LocalDate.of(2023, 10, 2)))
+                .thenReturn(workDay);
+
+        mockMvc.perform(get("/api/workdays/2023-10-02"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.workingDay").value("2023-10-02"))
+                .andExpect(jsonPath("$.validatedHours").value(8.0))
+                .andExpect(jsonPath("$.clockingList.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("GET /api/workdays/range?from=2023-10-01&to=2023-10-31 returns 200 with list")
+    void getWorkDaysByRangeTest() throws Exception {
+        when(findWorkDaysByDateRangeUseCase.findWorkDaysByDateRange(
+                LocalDate.of(2023, 10, 1),
+                LocalDate.of(2023, 10, 31)
+        )).thenReturn(List.of(workDay));
+
+        mockMvc.perform(get("/api/workdays/range")
+                        .param("from", "2023-10-01")
+                        .param("to", "2023-10-31"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].workingDay").value("2023-10-02"))
+                .andExpect(jsonPath("$[0].validatedHours").value(8.0))
+                .andExpect(jsonPath("$[0].clockingList.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("GET /api/workdays/balance?month=2023-10 returns 200 with a double value")
+    void getBalanceByMonthTest() throws Exception {
+        when(calculateMonthlyBalanceUseCase
+                .calculateMonthlyBalance(YearMonth.of(2023, 10)))
+                .thenReturn(Duration.ofHours(8));
+
+        mockMvc.perform(get("/api/workdays/balance")
+                        .param("month", "2023-10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(8.0));
+    }
+
+    @Test
+    @DisplayName("DELETE /api/workdays/2023-10-02 returns 204 and deletes the workday")
+    void deleteWorkDayTest() throws Exception {
+        doNothing().when(deleteWorkDayUseCase)
+                .deleteWorkDay(LocalDate.of(2023, 10, 2));
+
+        mockMvc.perform(delete("/api/workdays/2023-10-02"))
+                .andExpect(status().isNoContent());
+
+        verify(deleteWorkDayUseCase)
+                .deleteWorkDay(LocalDate.of(2023, 10, 2));
+    }
+
+    @Test
+    @DisplayName("POST /api/workdays creates a new workday and returns 201")
+    void postWorkDayTest() throws Exception {
+        when(createWorkDayUseCase.createWorkDay(any(WorkDay.class))).thenReturn(workDay);
+
+        mockMvc.perform(post("/api/workdays")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.validatedHours").value("8.0"));
+                .andExpect(jsonPath("$.workingDay").value("2023-10-02"))
+                .andExpect(jsonPath("$.validatedHours").value(8.0))
+                .andExpect(jsonPath("$.clockingList.length()").value(2));
 
-        verify(registerWorkDayUseCase).registerWorkDay(any());
+        verify(createWorkDayUseCase).createWorkDay(any(WorkDay.class));
     }
 
     @Test
-    @DisplayName("Should return a list with two records with data")
-    void shouldReturnAListOfRecordsWhenMonthIsRequested() throws Exception {
-        WorkDay wr1 = WorkDay.of(
-                LocalDate.of(2026, 3, 3),
-                LocalTime.of(8, 0),
-                LocalTime.of(16, 0),
-                null,
-                Duration.ofHours(8)
-        );
-        WorkDay wr2 = WorkDay.of(
-                LocalDate.of(2026, 3, 4),
-                LocalTime.of(8, 0),
-                LocalTime.of(16, 0),
-                null,
-                Duration.ofHours(8)
-        );
+    @DisplayName("PUT /api/workdays updates an existing workday and returns 200")
+    void putWorkDayTest() throws Exception {
+        when(updateWorkDayUseCase.updateWorkDay(any(WorkDay.class))).thenReturn(workDay);
 
-        List<WorkDay> list = List.of(wr1, wr2);
-
-        when(findWorkDayByMonthUseCase.findWorkDayByMonth(any())).thenReturn(list);
-
-        mockMvc.perform(get("/api/work-registrations/search/month/2026-03")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(put("/api/workdays")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].workingDay").value("2026-03-03"))
-                .andExpect(jsonPath("$[0].validatedHours").value(8.0))
-                .andExpect(jsonPath("$[1].startTime").value("08:00:00"));
+                .andExpect(jsonPath("$.workingDay").value("2023-10-02"))
+                .andExpect(jsonPath("$.validatedHours").value(8.0))
+                .andExpect(jsonPath("$.clockingList.length()").value(2));
 
-    }
-
-    @Test
-    @DisplayName("Should return the monthly balance as a decimal number of hours")
-    void shouldReturnDecimalBalanceWhenMonthIsRequested() throws Exception {
-        when(calculateMonthlyBalanceUseCase.calculateMonthlyBalance(any()))
-                .thenReturn(Duration.ofMinutes(7230));
-
-        mockMvc.perform(get("/api/work-registrations/balance/2026-03")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").value(120.5));
-    }
-
-    @Test
-    @DisplayName("Should return http code 204 No Content")
-    void shouldReturn204WhenRegistrationIsDeleted() throws Exception {
-        mockMvc.perform(delete("/api/work-registrations/delete/{date}",
-                        "2026-03-08")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-
-        verify(deleteWorkDayUseCase).deleteWorkDay(LocalDate.of(2026, 3, 8));
+        verify(updateWorkDayUseCase).updateWorkDay(any(WorkDay.class));
     }
 }
-*/
