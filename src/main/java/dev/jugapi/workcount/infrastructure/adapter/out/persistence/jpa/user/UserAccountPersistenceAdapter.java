@@ -3,9 +3,11 @@ package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.user;
 
 import dev.jugapi.workcount.application.port.out.user.UserAccountRepository;
 import dev.jugapi.workcount.domain.model.user.UserAccount;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class UserAccountPersistenceAdapter implements UserAccountRepository {
 
     private final SpringDataUserAccountRepository repository;
