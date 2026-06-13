@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.YearMonth;
 
 @Entity
-@Table(name = "work_month_template")
+@Table(name = "work_month_templates")
 public class WorkMonthTemplateEntity {
     @Id
     @GeneratedValue

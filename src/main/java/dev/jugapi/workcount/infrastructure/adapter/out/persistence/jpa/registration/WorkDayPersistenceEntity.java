@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "work_registration")
+@Table(name = "work_registrations")
 public class WorkDayPersistenceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class WorkDayPersistenceEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "work_registration_clocking",
+            name = "work_registration_clockings",
             joinColumns = @JoinColumn(name = "work_registration_id")
     )
     @OrderColumn(name = "clocking_order")

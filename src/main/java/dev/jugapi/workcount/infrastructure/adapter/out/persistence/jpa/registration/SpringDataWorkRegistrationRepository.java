@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface SpringDataWorkRegistrationRepository extends
         JpaRepository<WorkDayPersistenceEntity, Long> {
+
     boolean existsByDate(LocalDate date);
 
     Optional<WorkDayPersistenceEntity> findByDate(LocalDate date);
