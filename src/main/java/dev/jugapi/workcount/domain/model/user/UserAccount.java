@@ -3,6 +3,7 @@ package dev.jugapi.workcount.domain.model.user;
 import java.util.Objects;
 
 public class UserAccount {
+
     private final String username;
     private final String passwordHash;
     private final boolean enabled;
