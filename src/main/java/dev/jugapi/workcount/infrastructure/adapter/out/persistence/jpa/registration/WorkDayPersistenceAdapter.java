@@ -3,14 +3,14 @@ package dev.jugapi.workcount.infrastructure.adapter.out.persistence.jpa.registra
 import dev.jugapi.workcount.application.port.out.workday.WorkDayRepository;
 import dev.jugapi.workcount.domain.exception.InexistentWorkDayException;
 import dev.jugapi.workcount.domain.model.workday.WorkDay;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Component
 public class WorkDayPersistenceAdapter implements WorkDayRepository {
     private final SpringDataWorkRegistrationRepository repository;
     private final WorkDayPersistenceMapper mapper;
