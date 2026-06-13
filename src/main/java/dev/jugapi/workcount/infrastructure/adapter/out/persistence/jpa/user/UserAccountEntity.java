@@ -19,7 +19,7 @@ public class UserAccountEntity {
     @Column(nullable = false)
     private boolean enabled;
 
-    public UserAccountEntity() {
+    protected UserAccountEntity() {
     }
 
     public UserAccountEntity(String username, String passwordHash, boolean enabled) {
